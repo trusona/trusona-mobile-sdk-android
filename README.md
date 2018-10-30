@@ -100,10 +100,10 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  compile "com.trusona.android:mobile-sdk:6.3.2"
+  compile "com.trusona.android:mobile-sdk:6.4.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
-  //compile "com.trusona.android:passport-sdk:6.3.2"
+  //compile "com.trusona.android:passport-sdk:6.4.0"
 }
 ```
 
@@ -215,9 +215,13 @@ requiring the user to accept and/or provide the credentials used to unlock the d
 
 Monitoring for in progress trusonafications requires an implementation of `TrusonaficationHandler`.
 
-The interface has two methods:
+The interface has six methods:
    - `void onAccept(boolean)`
    - `void onReject(boolean)`
+   - `void onFailedDependency()`
+   - `Integer fragmentContainerId()`
+   - `Future<Fragment> prepare(Trusonafication trusonafication)`
+   - `Integer acceptRejectLayoutId()`
    
    
 #### Example
@@ -248,7 +252,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: update this method to return the id of the ViewGroup container. This ID must be 
+        // todo: update this method to return the id of the ViewGroup container. This ID must be
         // present in the layout of the fragment passed to the `monitorForPendingTrusonafication`
         // or `monitorContinuouslyPendingTrusonafications` methods.
         return 0;
@@ -258,14 +262,30 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @Override
     public Integer acceptRejectLayoutId() {
         // todo: update this method to return the id of the layout that will be used to prompt users
-        // to accept or reject trusonafications. Alternatively, return null to use the default OS 
+        // to accept or reject trusonafications. Alternatively, return null to use the default OS
         // alert dialog.
         return 0; // or null
+    }
+
+    @Override
+    void onFailedDependency() {
+        // todo: update this method to handle the case of when a required dependency to process
+        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication is EX but
+        // the user is not at level EX yet.
+    }
+
+    @NonNull
+    @Override
+    Future<Fragment> prepare(Trusonafication trusonafication) {
+        // todo: this this method to return an implementation of Future that return's the loaded
+        // fragment on Future.get(). The provided trusonafication parameter is the IN_PROGRESS
+        // trusonafication that we are about to process and can be peeked at to glean information
+        // about it.
     }
 };
 
 // 2
-trusona.monitorForPendingTrusonafication(fragment, trusonaficationHandler);
+trusona.monitorForPendingTrusonafication(trusonaficationHandler);
 
 // 3
 trusona.stopPendingTrusonaficationsMonitor();
@@ -278,9 +298,9 @@ method can be styled in any way but it must contain the following views to be pr
 * A view with the id `trusonafication_reject_button`
 
 2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
-a reference of the current foreground `Fragment` and an instance of the implemented `TrusonaficationHandler` to
-monitor for a pending `Trusonafication`.
+an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`.
 * This call would be made in your frament's `onStart()` lifecycle method.
+
 3. To release resources, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
 
 
