@@ -277,7 +277,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // todo: this this method to return an implementation of Future that return's the loaded
+        // todo: update this method to return an implementation of Future that returns the loaded
         // fragment on Future.get(). The provided trusonafication parameter is the IN_PROGRESS
         // trusonafication that we are about to process and can be peeked at to glean information
         // about it.
