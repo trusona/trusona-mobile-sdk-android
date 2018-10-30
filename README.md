@@ -254,7 +254,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     public Integer fragmentContainerId() {
         // todo: update this method to return the id of the ViewGroup container. This ID must be
         // present in the layout of the fragment passed to the `monitorForPendingTrusonafication`
-        // or `monitorContinuouslyPendingTrusonafications` methods.
+        // methods.
         return 0;
     }
 
