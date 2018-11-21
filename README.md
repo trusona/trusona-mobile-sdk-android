@@ -206,7 +206,7 @@ The latter will contain the device's status and a `device identifier` if one was
 `getDeviceIdentifier` method whenever you need the most current device identifier.
 
 
-### Monitoring for an `IN_PROGRESS` Trusonfication
+### Monitoring for an `IN_PROGRESS` Trusonafication
 
 A Trusonafication occurs when a user attempts to access a protected resource, and the user is allowed
 to accept or deny the action. When a Trusonafication is received, the app needs to respond to confirm
