@@ -252,18 +252,21 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: update this method to return the id of the ViewGroup container. This ID must be
-        // present in the layout of the fragment passed to the `monitorForPendingTrusonafication`
-        // methods.
+        // todo: update this method to return the id of the ViewGroup container into which the Trusona 
+        // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
+        // be present in the layout of the fragment returned by the `prepare` method implementation in
+        // this class.
+        // i.e.: R.id.my_fragment_container.
         return 0;
     }
 
     @Nullable
     @Override
     public Integer acceptRejectLayoutId() {
-        // todo: update this method to return the id of the layout that will be used to prompt users
-        // to accept or reject trusonafications. Alternatively, return null to use the default OS
-        // alert dialog.
+        // todo: In order to customize the UI used to prompt users to accept or reject 
+        // trusonafications you can return the ID of the xml layout you'd like to use. 
+        // Otherwise, return null to use the default OS alert dialog. 
+        // i.e.: R.layout.my_accept_reject_layout.
         return 0; // or null
     }
 
@@ -277,10 +280,12 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // todo: update this method to return an implementation of Future that returns the loaded
-        // fragment on Future.get(). The provided trusonafication parameter is the IN_PROGRESS
-        // trusonafication that we are about to process and can be peeked at to glean information
-        // about it.
+        // todo: update this method to return an implementation of Future that returns the Fragment
+        // that will be used to host the identity document scanner in case one needs to be shown.
+        // The Fragment should be returned by Future.get() only after it has been brought into the
+        // foreground and is ready to host the identity document scanner.
+        // The provided trusonafication parameter is the IN_PROGRESS trusonafication that we are
+        // about to process and can be peeked at to glean information about it.
     }
 };
 
@@ -299,7 +304,6 @@ method can be styled in any way but it must contain the following views to be pr
 
 2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
 an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`.
-* This call would be made in your frament's `onStart()` lifecycle method.
 
 3. To release resources, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
 
@@ -307,6 +311,9 @@ an instance of the implemented `TrusonaficationHandler` to monitor for a pending
 ### Scanning Driver's Licenses
 
 The Trusona SDK provides a user interface that can be shown to prompt the user to scan the barcode on a US/Canadian driver's license. The SDK will call a callback in the app upon successful scanning and provide the parsed contents of the barcode. In the case of failure, another callback will be called, which should handle the failure in a way that makes sense in the app.
+
+Note: Scanning a driver's license as part of accepting a Trusonafication is handled automatically by the SDK. Use the following method only if you require to examine the contents
+of a driver's license as part of the business logic in your application.
 
 ```java
 // 1
@@ -332,7 +339,11 @@ PDF417ScanHandler pdf417ScanHandler = new PDF417ScanHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-   	     // todo: return the ID of the fragment container; definitely not zero
+        // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Driver
+        // License scanner. This ID must be present in the layout of the Fragment that's passed
+        // in as a parameter to the scanDriversLicense method, and the Fragment must have been
+        // brought into the foreground and be ready to host the Driver License scanner.
+        // i.e.: R.id.my_fragment_container.
         return 0;
     }
 	
@@ -374,7 +385,11 @@ PassportScanHandler passportScanHandler = new PassportScanHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: return the ID of the fragment container, i.e.: R.id.my_fragment_container.
+        // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Passport
+        // scanner. This ID must be present in the layout of the Activity that's passed
+        // in as a parameter to the getPassportScanner method, and the Activity must have been
+        // brought into the foreground and be ready to host the Passport scanner.
+        // i.e.: R.id.my_passport_scanner_container.
         return 0;
     }
 };
@@ -412,7 +427,11 @@ PDF417UpgradeHandler pdf417UpgradeHandler = new PDF417UpgradeHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-   	     // todo: return the ID of the fragment container; definitely not zero
+   	    // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Driver
+        // License scanner. This ID must be present in the layout of the Fragment that's passed
+        // in as a parameter to the upgradeToExecutive method, and the Fragment must have been
+        // brought into the foreground and ready to host the Driver License scanner.
+        // i.e.: R.id.my_fragment_container.
    	     return 0;
     }
 
