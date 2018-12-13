@@ -117,6 +117,14 @@ and `api secret`.
 Trusona trusona = new Trusona(myApiToken, myApiSecret);
 ```
 
+The Trusona SDKs have infrastructure in place to serve the US, European and Asia-Pacific regions. By default, all SDK calls will be served by the US region. If you’d like to use a particular region, simply specify one of the possible values from the `Region` enum when building a `Trusona` instance.
+
+```java
+Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.EU);     // Use this to leverage the European region
+//or
+Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.AP);     // Use this to leverage the Asia-Pacific region
+```
+
 ### Device Identifier
 
 A device identifier is required to interact with some of the Trusona APIs. To acquire one, simply
