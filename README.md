@@ -17,7 +17,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
         1. [Requesting a Device Identifier](#requesting-a-device-identifier)
             1. [Example](#example)
 1. [Scanning TruCodes](#scanning-trucodes)
-1. [Monitoring for an `IN_PROGRESS` Trusonafication](monitoring-for-an-in_progress-trusonafication)
+1. [Monitoring for an `IN_PROGRESS` Trusonafication](monitoring-for-an-`in_progress`-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
 1. [Upgrading to Executive](#upgrading-to-executive)
