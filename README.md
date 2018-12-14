@@ -17,7 +17,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
         1. [Requesting a Device Identifier](#requesting-a-device-identifier)
             1. [Example](#example)
 1. [Scanning TruCodes](#scanning-trucodes)
-1. [Monitoring for an `IN_PROGRESS` Trusonafication](monitoring-for-an-`in_progress`-trusonafication)
+1. [Monitoring for an IN_PROGRESS Trusonafication](monitoring-for-an-in_progress-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
 1. [Upgrading to Executive](#upgrading-to-executive)
@@ -275,7 +275,7 @@ Alternatively, if you'd like to load the TruCode scanner in a layout that is not
 `getTruCodeFragment` method provides a `Fragment` reference that can be loaded using an Activity's 
 `SupportFragmentManager`.
 
-### Monitoring for an `IN_PROGRESS` Trusonafication
+### Monitoring for an IN_PROGRESS Trusonafication
 
 A Trusonafication occurs when a user attempts to access a protected resource, and the user is allowed
 to accept or deny the action. When a Trusonafication is received, the app needs to respond to confirm
