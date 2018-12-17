@@ -16,6 +16,8 @@ The Trusona SDK allows simplified interaction with the Trusona API.
         1. [Generated Keys](#generated-keys)
         1. [Requesting a Device Identifier](#requesting-a-device-identifier)
             1. [Example](#example)
+1. [Scanning TruCodes](#scanning-trucodes)
+1. [Monitoring for an IN_PROGRESS Trusonafication](#monitoring-for-an-in_progress-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
 1. [Upgrading to Executive](#upgrading-to-executive)
@@ -206,7 +208,74 @@ The latter will contain the device's status and a `device identifier` if one was
 `getDeviceIdentifier` method whenever you need the most current device identifier.
 
 
-### Monitoring for an `IN_PROGRESS` Trusonafication
+### Scanning TruCodes
+
+TruCodes are a mechanism used to identify the user that is attempting to log into a resource protected by trusona.
+
+The Trusona SDk provides a Scanner that will recognize TruCodes and create a Trusonafication whenever one of them is
+scanned.
+
+The following example illustrates how to use the TruCode Scanner:
+
+```java
+// 1
+TruCodeHandler truCodeHandler = new TruCodeHandler() {
+  @Override
+  public void onTruCode(boolean success) {
+    if (success) {
+      // The TruCode was successfully scanned. You may want to start monitoring for pending
+      // trusonafications at this point if you haven't done so yet.
+    }
+    else {
+      // There was an error while scanning the TruCode
+    }
+  }
+
+  @Nullable
+  @Override
+  public Integer acceptRejectLayoutId() {
+    // todo: In order to customize the UI used to prompt users to accept or reject
+    // trusonafications you can return the ID of the xml layout you'd like to use.
+    // Otherwise, return null to use the default OS alert dialog.
+    // i.e.: R.layout.my_accept_reject_layout.
+    return null;
+  }
+
+  @NonNull
+  @Override
+  public Integer fragmentContainerId() {
+    // todo: update this method to return the id of the ViewGroup container into which the Trusona
+    // SDK will display the TruCode Scanner. This ID must be present in the layout of the fragment
+    // that's in the foreground.
+    // i.e.: R.id.my_fragment_container.
+    return null;
+  }
+};
+
+// 2
+IdentifierProvider identifierProvider = new IdentifierProvider() {
+  @Override
+  public String identifier() {
+    // todo: Return your device's identifier
+    return null;
+  }
+};
+
+// 3
+trusona.loadTruCodeAsChildFragment(myFragment, truCodeHandler, identifierProvider);
+```
+
+1. Implement the `TruCodeHandler` interface, which will be notified when the Trucode has been scanned.
+2. Implement the `IdentifierProvider` to return the device's identifier
+3. Invoke the Trusona API passing in the implemented interfaces and a reference to the `Fragment` where 
+the TruCode Scanner should be displayed. This API call should be done once the `Fragment` passed as a parameter
+has been attached to its corresponging activity and is visible, for example, during it's `onViewCreated` method.
+
+Alternatively, if you'd like to load the TruCode scanner in a layout that is not part of a `Fragment`, the 
+`getTruCodeFragment` method provides a `Fragment` reference that can be loaded using an Activity's 
+`SupportFragmentManager`.
+
+### Monitoring for an IN_PROGRESS Trusonafication
 
 A Trusonafication occurs when a user attempts to access a protected resource, and the user is allowed
 to accept or deny the action. When a Trusonafication is received, the app needs to respond to confirm
