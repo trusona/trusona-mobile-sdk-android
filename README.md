@@ -125,7 +125,7 @@ The Trusona SDKs have infrastructure in place to serve the US, European and Asia
 // Use this to connect to the European region
 Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.EU);     
 //or use this to connect to the Asia-Pacific region
-Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.AP);     // 
+Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.AP);
 ```
 
 ### Device Identifier
