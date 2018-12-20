@@ -102,10 +102,10 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  compile "com.trusona.android:mobile-sdk:6.4.6"
+  compile "com.trusona.android:mobile-sdk:6.5.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
-  //compile "com.trusona.android:passport-sdk:6.4.6"
+  //compile "com.trusona.android:passport-sdk:6.5.0"
 }
 ```
 
@@ -117,6 +117,15 @@ and `api secret`.
 
 ```java
 Trusona trusona = new Trusona(myApiToken, myApiSecret);
+```
+
+The Trusona SDKs have infrastructure in place to serve the US, European and Asia-Pacific regions, with the US being the default one. Unless otherwise noted you will not need to configure Trusona to use a specific region. If you have been provisioned in a specific region, you will need to point the SDK to use that region. To achieve this you’ll need to specify one of the possible values from the `Region` enum when building a `Trusona` instance.
+
+```java
+// Use this to connect to the European region
+Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.EU);     
+//or use this to connect to the Asia-Pacific region
+Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.AP);     // 
 ```
 
 ### Device Identifier
