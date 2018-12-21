@@ -240,16 +240,6 @@ TruCodeHandler truCodeHandler = new TruCodeHandler() {
     }
   }
 
-  @Nullable
-  @Override
-  public Integer acceptRejectLayoutId() {
-    // todo: In order to customize the UI used to prompt users to accept or reject
-    // trusonafications you can return the ID of the xml layout you'd like to use.
-    // Otherwise, return null to use the default OS alert dialog.
-    // i.e.: R.layout.my_accept_reject_layout.
-    return null;
-  }
-
   @NonNull
   @Override
   public Integer fragmentContainerId() {
