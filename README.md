@@ -209,7 +209,7 @@ trusona.getDeviceIdentifier(context, deviceIdentifierRequester);
 ```
 
 1. Implement the `DeviceIdentifierRequester` interface that will receive an instance of `DeviceIdentifierResponse`.
-The latter will contain the device's status and a `device identifier` if one was generated.
+The latter will contain the device's status, the `device identifier` and an optional `String` that contains a signed JWT containing the device identifier in the `sub` field. This JWT can be verified against the JWK set at https://api.trusona.net/jwks to verify its authenticity.
 2. Invoke the Trusona API passing in a reference to a context and your implementation of `DeviceIdentifierRequester`.
 
 
