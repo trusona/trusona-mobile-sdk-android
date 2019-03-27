@@ -1,0 +1,58 @@
+apply plugin: "com.android.application"
+
+android {
+  compileSdkVersion 28
+
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+
+  defaultConfig {
+    applicationId "com.trusona.android.example"
+    minSdkVersion 21
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0"
+
+    //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+    }
+  }
+}
+
+dependencies {
+  //implementation fileTree(dir: "libs", include: ["*.jar"])
+
+  implementation "com.trusona.android:mobile-sdk:6.6.0"
+
+  implementation "androidx.appcompat:appcompat:1.0.2"
+  implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+}
+
+configurations.all {
+  resolutionStrategy {
+    failOnVersionConflict()
+
+    def set = [] as Set
+
+    set << "androidx.vectordrawable:vectordrawable:1.0.1"
+    set << "androidx.annotation:annotation:1.0.1"
+    set << "androidx.core:core:1.0.1"
+
+    set << "org.apache.httpcomponents:httpcore:4.4.5"
+    set << "com.google.code.findbugs:jsr305:3.0.2"
+    set << "com.squareup.okhttp3:okhttp:3.12.1"
+    set << "com.google.guava:guava:27.0.1-jre"
+    set << "io.reactivex.rxjava2:rxjava:2.2.4"
+    set << "com.google.code.gson:gson:2.8.5"
+
+    force set.toArray()
+    forcedModules = set
+  }
+}
