@@ -40,7 +40,9 @@ configurations.all {
     failOnVersionConflict()
 
     def set = [] as Set
-
+    //
+    // update as necessary
+    //
     set << "androidx.vectordrawable:vectordrawable:1.0.1"
     set << "androidx.annotation:annotation:1.0.1"
     set << "androidx.core:core:1.0.1"
