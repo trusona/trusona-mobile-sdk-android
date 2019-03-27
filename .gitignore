@@ -1,4 +1,5 @@
-!gradle/wrapper/gradle-wrapper.jar
+*.jar
+!empty-shell-example/gradle/wrapper/gradle-wrapper.jar
 .gradle*
 *.class
 *.ctxt
