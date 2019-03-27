@@ -109,6 +109,16 @@ dependencies {
 }
 ```
 
+### AndroidX Configuration
+
+The SDK has dependencies on the latest [AndroidX](https://developer.android.com/jetpack/androidx) libraries.
+
+For normal function and compatibility with legacy support librabries, add the following configuration to your project's `gradle.properties` file:
+
+```
+android.enableJetifier=true
+android.useAndroidX=true
+```
 
 ## Creating a Trusona instance
 
