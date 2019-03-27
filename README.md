@@ -11,6 +11,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
     1. [Adding the Trusona repository to Gradle](#adding-the-trusona-repository-to-gradle)
 1. [Installation](#installation)
     1. [Installing as a gradle dependency](#installing-as-a-gradle-dependency)
+    1. [AndroidX Configuration](#androidx-configuration)
 1. [Creating a Trusona instance](#creating-a-trusona-instance)
     1. [Device identifier](#device-identifier)
         1. [Generated Keys](#generated-keys)
