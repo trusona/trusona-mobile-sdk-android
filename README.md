@@ -97,15 +97,15 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 > Note: This method requires access to the private Trusona SDK Artifactory repository
 
 1. Ensure that your `~/.gradle.properties` file contains your supplied Artifactory credentials
-1. Define the SDK version you wish to use and add the `compile` dependency to your Gradle project.
+1. Define the SDK version you wish to use and add the `api` dependency to your Gradle project.
 
 ```gradle
 dependencies {
   // other dependencies
-  compile "com.trusona.android:mobile-sdk:6.5.8"
+  api "com.trusona.android:mobile-sdk:6.6.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
-  //compile "com.trusona.android:passport-sdk:6.5.8"
+  //api "com.trusona.android:passport-sdk:6.6.0"
 }
 ```
 

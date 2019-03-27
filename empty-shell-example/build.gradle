@@ -1,0 +1,30 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:3.3.2"
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    mavenCentral()
+    jcenter()
+
+    // the trusona repository
+    maven {
+      credentials {
+        username = trusonaUsername
+        password = trusonaPassword
+      }
+      url = "https://trusona.jfrog.io/trusona/sdk-releases/"
+    }
+  }
+}
+
+task clean(type: Delete) {
+  delete rootProject.buildDir
+}
