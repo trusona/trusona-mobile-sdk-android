@@ -115,7 +115,7 @@ dependencies {
 
 The SDK requires Java 8 compatibility. Be sure to have the following configuration within the `android` block of your project's `build.gradle` file:
 
-```groovy
+```gradle
 compileOptions {
   sourceCompatibility 1.8
   targetCompatibility 1.8
