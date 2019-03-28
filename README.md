@@ -11,6 +11,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
     1. [Adding the Trusona repository to Gradle](#adding-the-trusona-repository-to-gradle)
 1. [Installation](#installation)
     1. [Installing as a gradle dependency](#installing-as-a-gradle-dependency)
+    1. [Java 8 Configuration](#java-8-configuration)
     1. [AndroidX Configuration](#androidx-configuration)
 1. [Creating a Trusona instance](#creating-a-trusona-instance)
     1. [Device identifier](#device-identifier)
@@ -107,6 +108,17 @@ dependencies {
 
   // the following is only required if you will be using the Trusona Passport SDK
   //api "com.trusona.android:passport-sdk:6.6.0"
+}
+```
+
+### Java 8 Configuration
+
+The SDK requires Java 8 compatibility. Be sure to have the following configuration within the `android` block of your project's `build.gradle` file:
+
+```gradle
+compileOptions {
+  sourceCompatibility 1.8
+  targetCompatibility 1.8
 }
 ```
 
