@@ -113,7 +113,7 @@ dependencies {
 
 ### Java 8 Configuration
 
-The SDK requires Java8 compatibility. Be sure to have the following configuration within the `android` of your project's `build.gradle` file:
+The SDK requires Java 8 compatibility. Be sure to have the following configuration within the `android` of your project's `build.gradle` file:
 
 ```groovy
 compileOptions {
