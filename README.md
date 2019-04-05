@@ -266,7 +266,7 @@ TruCodeHandler truCodeHandler = new TruCodeHandler() {
   @NonNull
   @Override
   public Integer fragmentContainerId() {
-    // todo: update this method to return the id of the ViewGroup container into which the Trusona
+    // Update this method to return the id of the ViewGroup container into which the Trusona
     // SDK will display the TruCode Scanner. This ID must be present in the layout of the fragment
     // that's in the foreground.
     // i.e.: R.id.my_fragment_container.
@@ -278,7 +278,7 @@ TruCodeHandler truCodeHandler = new TruCodeHandler() {
 IdentifierProvider identifierProvider = new IdentifierProvider() {
   @Override
   public String identifier() {
-    // todo: Return your device's identifier
+    // Return your device's identifier
     return null;
   }
 };
@@ -343,7 +343,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: update this method to return the id of the ViewGroup container into which the Trusona 
+        // Update this method to return the id of the ViewGroup container into which the Trusona 
         // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
         // be present in the layout of the fragment returned by the `prepare` method implementation in
         // this class.
@@ -354,7 +354,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @Nullable
     @Override
     public Integer acceptRejectLayoutId() {
-        // todo: In order to customize the UI used to prompt users to accept or reject 
+        // In order to customize the UI used to prompt users to accept or reject 
         // trusonafications you can return the ID of the xml layout you'd like to use. 
         // Otherwise, return null to use the default OS alert dialog. 
         // i.e.: R.layout.my_accept_reject_layout.
@@ -363,7 +363,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
 
     @Override
     void onFailedDependency() {
-        // todo: update this method to handle the case of when a required dependency to process
+        // Update this method to handle the case of when a required dependency to process
         // an IN_PROGRESS trusonafication fails, for instance if the trusonafication is EX but
         // the user is not at level EX yet.
     }
@@ -371,7 +371,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // todo: update this method to return an implementation of Future that returns the Fragment
+        // Update this method to return an implementation of Future that returns the Fragment
         // that will be used to host the identity document scanner in case one needs to be shown.
         // The Fragment should be returned by Future.get() only after it has been brought into the
         // foreground and is ready to host the identity document scanner.
@@ -430,7 +430,7 @@ PDF417ScanHandler pdf417ScanHandler = new PDF417ScanHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Driver
+        // Return the ID of the ViewGroup in which the SDK will attempt to load the Driver
         // License scanner. This ID must be present in the layout of the Fragment that's passed
         // in as a parameter to the scanDriversLicense method, and the Fragment must have been
         // brought into the foreground and be ready to host the Driver License scanner.
@@ -476,7 +476,7 @@ PassportScanHandler passportScanHandler = new PassportScanHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-        // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Passport
+        // Return the ID of the ViewGroup in which the SDK will attempt to load the Passport
         // scanner. This ID must be present in the layout of the Activity that's passed
         // in as a parameter to the getPassportScanner method, and the Activity must have been
         // brought into the foreground and be ready to host the Passport scanner.
@@ -518,7 +518,7 @@ PDF417UpgradeHandler pdf417UpgradeHandler = new PDF417UpgradeHandler() {
     @NonNull
     @Override
     public Integer fragmentContainerId() {
-   	    // todo: return the ID of the ViewGroup in which the SDK will attempt to load the Driver
+   	    // Return the ID of the ViewGroup in which the SDK will attempt to load the Driver
         // License scanner. This ID must be present in the layout of the Fragment that's passed
         // in as a parameter to the upgradeToExecutive method, and the Fragment must have been
         // brought into the foreground and ready to host the Driver License scanner.
@@ -582,7 +582,7 @@ TruCodeHandler deepLinkTruCodeHandler = new TruCodeHandler() {
     @Nullable
     @Override
     public Integer fragmentContainerId() {
-        // todo: update this method to return the id of the ViewGroup container in which the accept / reject 
+        // Update this method to return the id of the ViewGroup container in which the accept / reject 
         // prompt will be loaded. This ID must be present in the layout of the fragment passed to the `handleTruCodeDeepLink`
         // method.
         return null;
@@ -591,7 +591,7 @@ TruCodeHandler deepLinkTruCodeHandler = new TruCodeHandler() {
     @Nullable
     @Override
     public Integer acceptRejectLayoutId() {
-        // todo: update this method to return the id of the layout that will be used to prompt users
+        // Update this method to return the id of the layout that will be used to prompt users
         // to accept or reject trusonafications. Alternatively, return null to use the default OS 
         // alert dialog.
         return null;
