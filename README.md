@@ -311,7 +311,7 @@ The interface has six methods:
    - `void onReject(boolean)`
    - `void onFailedDependency()`
    - `Integer fragmentContainerId()`
-   - `Future<Fragment> prepare(Trusonafication trusonafication)`
+   - `Fragment prepare(Trusonafication trusonafication)`
    - `Integer acceptRejectLayoutId()`
    
    
@@ -346,7 +346,8 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         // Update this method to return the id of the ViewGroup container into which the Trusona 
         // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
         // be present in the layout of the fragment returned by the `prepare` method implementation in
-        // this class.
+        // this class. Alternatively, this can be null if your application does not require identity
+        // document scanning.
         // i.e.: R.id.my_fragment_container.
         return 0;
     }
@@ -371,12 +372,24 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // Update this method to return an implementation of Future that returns the Fragment
-        // that will be used to host the identity document scanner in case one needs to be shown.
-        // The Fragment should be returned by Future.get() only after it has been brought into the
-        // foreground and is ready to host the identity document scanner.
-        // The provided trusonafication parameter is the IN_PROGRESS trusonafication that we are
-        // about to process and can be peeked at to glean information about it.
+        // Update this method to return an instance of the Fragment onto which you want to 
+        // load the identity document scanner or null if your application does not require
+        // identity document scanning. The Fragment must be loaded by the FragmentManager
+        // before being returned.
+        //
+        // This callback will be executed prior to the SDK challenging the user to accept a
+        // Trusonafication. You may inspect the IN_PROGRESS Trusonafication which is passed 
+        // as a parameter and perform any UI updates necessary.
+        //
+        // Note: If this method returns null and your application receives a trusonafication that
+        // requires an identity document to be scanned, the SDK will reject that trusonafication
+        // and log an error in Logcat.
+        //
+        // Sample implementation:
+        MyFragment myFragment = MyFragment.newInstance();
+        myActivity.getSupportFragmentManager().beginTransaction()
+          .add(R.id.fragment_container, myFragment).commit();
+        return myFragment;
     }
 };
 
