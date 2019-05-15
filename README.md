@@ -396,7 +396,7 @@ method can be styled in any way but it must contain the following views to be pr
 2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
 an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`.
 
-3. To release resources, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
+3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
 
 
 ### Scanning Driver's Licenses
