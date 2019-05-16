@@ -304,7 +304,12 @@ to accept or deny the action. When a Trusonafication is received, the app needs 
 the user's identity. Depending on how the Trusonafication was created, this may involve a visual prompt
 requiring the user to accept and/or provide the credentials used to unlock the device.
 
-Monitoring for in progress trusonafications requires an implementation of `TrusonaficationHandler`.
+Monitoring for in progress trusonafications should happen only when your application is in the foreground.
+Conversely, you should stop monitoring for trusonafications when your app is sent to the background. Typically
+you'll want to start the monitoring process in your `Activity`'s or `Fragment`'s `onResume` lifecycle callback
+and you'll want to stop monitoring during the `onStop` lifecycle callback.
+
+A call to the `monitorForPendingTrusonafication` method requires an implementation of `TrusonaficationHandler`.
 
 The interface has six methods:
    - `void onAccept(boolean)`
@@ -395,12 +400,15 @@ method can be styled in any way but it must contain the following views to be pr
 * A view with the id `trusonafication_reject_button`
 
 2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
-an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`.
+an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`. Usually you
+would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 
-3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
+3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `Activity`'s or 
+`Fragment`'s  `onStop` life cycle method.
 
-It's important to note that trusonafications can expire after a period time (the default being 2 minutes). If a trusonafication
-expires, then the SDK will automatically reject and call the `onReject(boolean success)` method with a false parameter value.
+It's important to note that trusonafications can expire after a period time (the default being 2 minutes). If a 
+trusonafication expires, then the SDK will automatically reject and call the `onReject(boolean success)` method 
+with a false parameter value.
 
 ### Scanning Driver's Licenses
 
