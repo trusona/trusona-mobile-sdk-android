@@ -383,7 +383,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         // The second is for the sdk developers to prepare a fragment that will be used to host
         // the SDK's identity document scanner in case the incoming trusonafication requires it.
         // If your application does not require identity document scanning, you need to provide
-        // a fragment with an empty UI layout. In either case this fragment should be loaded into the 
+        // a fragment with an empty UI layout. In either case, this fragment should be loaded into the 
         // current activity and it should be exposed via a Future<Fragment> and returned.
         // Your implementation of `Future.get()` should return said fragment only after it has been 
         // brought into the foreground and is ready to host the identity document scanner.
