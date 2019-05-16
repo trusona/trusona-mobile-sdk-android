@@ -377,12 +377,16 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // Update this method to return an implementation of Future that returns the Fragment
-        // that will be used to host the identity document scanner in case one needs to be shown.
-        // The Fragment should be returned by Future.get() only after it has been brought into the
-        // foreground and is ready to host the identity document scanner.
-        // The provided trusonafication parameter is the IN_PROGRESS trusonafication that we are
-        // about to process and can be peeked at to glean information about it.
+        // This callback has 2 purposes. The first is to allow sdk developers to glean information
+        // from the incoming IN_PROGRESS trusonafication that's received as a parameter and which 
+        // the user will have to accept/reject.
+        // The second is for the sdk developers to prepare a fragment that will be used to host
+        // the SDK's identity document scanner in case the incoming trusonafication requires it.
+        // If your application does not require identity document scanning, you need to provide
+        // a fragment with an empty UI layout. In either case this fragment should be loaded into the 
+        // current activity and it should be exposed via a Future<Fragment> and returned.
+        // Your implementation of `Future.get()` should return said fragment only after it has been 
+        // brought into the foreground and is ready to host the identity document scanner.
     }
 };
 
