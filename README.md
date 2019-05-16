@@ -410,7 +410,7 @@ would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `Activity`'s or 
 `Fragment`'s  `onStop` life cycle method.
 
-It's important to note that trusonafications can expire after a period time (the default being 2 minutes). If a 
+It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
 trusonafication expires, then the SDK will automatically reject and call the `onReject(boolean success)` method 
 with a false parameter value.
 
