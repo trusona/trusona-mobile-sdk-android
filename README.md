@@ -304,7 +304,12 @@ to accept or deny the action. When a Trusonafication is received, the app needs 
 the user's identity. Depending on how the Trusonafication was created, this may involve a visual prompt
 requiring the user to accept and/or provide the credentials used to unlock the device.
 
-Monitoring for in progress trusonafications requires an implementation of `TrusonaficationHandler`.
+Monitoring for in progress trusonafications should happen only when your application is in the foreground.
+Conversely, you should stop monitoring for trusonafications when your app is sent to the background. Typically
+you'll want to start the monitoring process in your `Activity`'s or `Fragment`'s `onResume` lifecycle callback
+and you'll want to stop monitoring during the `onStop` lifecycle callback.
+
+A call to the `monitorForPendingTrusonafication` method requires an implementation of `TrusonaficationHandler`.
 
 The interface has six methods:
    - `void onAccept(boolean)`
@@ -336,7 +341,8 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
             // the user's intent to reject the trusonafication was completed successfully
         }
         else {
-            // the user's intent to reject the trusonafication failed
+            // Either the user's intent to reject the trusonafication failed or the trusonafication
+            // timed out and it was automatically rejected by the SDK.
         }
     }
 
@@ -364,19 +370,23 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @Override
     void onFailedDependency() {
         // Update this method to handle the case of when a required dependency to process
-        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication is EX but
-        // the user is not at level EX yet.
+        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication requires
+        // scanning an identity document, but the user has not registered one yet.
     }
 
     @NonNull
     @Override
     Future<Fragment> prepare(Trusonafication trusonafication) {
-        // Update this method to return an implementation of Future that returns the Fragment
-        // that will be used to host the identity document scanner in case one needs to be shown.
-        // The Fragment should be returned by Future.get() only after it has been brought into the
-        // foreground and is ready to host the identity document scanner.
-        // The provided trusonafication parameter is the IN_PROGRESS trusonafication that we are
-        // about to process and can be peeked at to glean information about it.
+        // This callback has 2 purposes. The first is to allow sdk developers to glean information
+        // from the incoming IN_PROGRESS trusonafication that's received as a parameter and which 
+        // the user will have to accept/reject.
+        // The second is for the sdk developers to prepare a fragment that will be used to host
+        // the SDK's identity document scanner in case the incoming trusonafication requires it.
+        // If your application does not require identity document scanning, you need to provide
+        // a fragment with an empty UI layout. In either case, this fragment should be loaded into the 
+        // current activity and it should be exposed via a Future<Fragment> and returned.
+        // Your implementation of `Future.get()` should return said fragment only after it has been 
+        // brought into the foreground and is ready to host the identity document scanner.
     }
 };
 
@@ -394,14 +404,19 @@ method can be styled in any way but it must contain the following views to be pr
 * A view with the id `trusonafication_reject_button`
 
 2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
-an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`.
+an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`. Usually you
+would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 
-3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
+3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `Activity`'s or 
+`Fragment`'s  `onStop` life cycle method.
 
+It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
+trusonafication expires, then the SDK will automatically reject it and call the `onReject(boolean success)` method 
+with a false parameter value.
 
 ### Scanning Driver's Licenses
 
-The Trusona SDK provides a user interface that can be shown to prompt the user to scan the barcode on a US/Canadian driver's license. The SDK will call a callback in the app upon successful scanning and provide the parsed contents of the barcode. In the case of failure, another callback will be called, which should handle the failure in a way that makes sense in the app.
+The Trusona SDK provides a user interface that can be shown to prompt the user to scan the barcode on a US/Canadian driver's license. The SDK will execute a callback in the app upon successful scanning and provide the parsed contents of the barcode. In the case of failure, another callback will be called, which should handle the failure in a way that makes sense in the app.
 
 Note: Scanning a driver's license as part of accepting a Trusonafication is handled automatically by the SDK. Use the following method only if you require to examine the contents
 of a driver's license as part of the business logic in your application.
@@ -507,12 +522,11 @@ PDF417UpgradeHandler pdf417UpgradeHandler = new PDF417UpgradeHandler() {
 
     @Override
     public void onSuccess(@NonNull IdentityDocument<DriversLicenseScanResult> identityDocument) {
-    	// examine returned Identity document instance as necessary
-    	// Additionally, the user was succesfully upgraded, now you 
-    	// can authenticate them at Executive level
-      //
-      // Additionally, you can examine the scan result for this event with the following method
-      DriversLicenseScanResult driversLicenseScanResult = identityDocument.getDocument();
+        // This method will be called when the user was succesfully upgraded, which means
+        // now you  can authenticate them at Executive level.
+        // You may examine the returned IdentityDocument instance as necessary and get a
+        // DriversLicenseScanResult instance to examine via the following method:
+        DriversLicenseScanResult driversLicenseScanResult = identityDocument.getDocument();
     }
 
     @NonNull
