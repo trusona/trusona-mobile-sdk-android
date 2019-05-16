@@ -411,7 +411,7 @@ would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 `Fragment`'s  `onStop` life cycle method.
 
 It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
-trusonafication expires, then the SDK will automatically reject and call the `onReject(boolean success)` method 
+trusonafication expires, then the SDK will automatically reject it and call the `onReject(boolean success)` method 
 with a false parameter value.
 
 ### Scanning Driver's Licenses
