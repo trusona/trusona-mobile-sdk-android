@@ -336,7 +336,8 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
             // the user's intent to reject the trusonafication was completed successfully
         }
         else {
-            // the user's intent to reject the trusonafication failed
+            // Either the user's intent to reject the trusonafication failed or the trusonafication
+            // timed out and it was automatically rejected by the SDK.
         }
     }
 
@@ -398,6 +399,8 @@ an instance of the implemented `TrusonaficationHandler` to monitor for a pending
 
 3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `onStop` fragment life cycle method.
 
+It's important to note that trusonafications can expire after a period time (the default being 2 minutes). If a trusonafication
+expires, then the SDK will automatically reject and call the `onReject(boolean success)` method with a false parameter value.
 
 ### Scanning Driver's Licenses
 
