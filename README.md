@@ -522,12 +522,11 @@ PDF417UpgradeHandler pdf417UpgradeHandler = new PDF417UpgradeHandler() {
 
     @Override
     public void onSuccess(@NonNull IdentityDocument<DriversLicenseScanResult> identityDocument) {
-    	// examine returned Identity document instance as necessary
-    	// Additionally, the user was succesfully upgraded, now you 
-    	// can authenticate them at Executive level
-      //
-      // Additionally, you can examine the scan result for this event with the following method
-      DriversLicenseScanResult driversLicenseScanResult = identityDocument.getDocument();
+        // This method will be called when the user was succesfully upgraded, which means
+        // now you  can authenticate them at Executive level.
+        // You may examine the returned IdentityDocument instance as necessary and get a
+        // DriversLicenseScanResult instance to examine via the following method:
+        DriversLicenseScanResult driversLicenseScanResult = identityDocument.getDocument();
     }
 
     @NonNull
