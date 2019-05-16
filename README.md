@@ -370,8 +370,8 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     @Override
     void onFailedDependency() {
         // Update this method to handle the case of when a required dependency to process
-        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication is EX but
-        // the user is not at level EX yet.
+        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication requires
+        // scanning an identity document, but the user has not registered one yet.
     }
 
     @NonNull
