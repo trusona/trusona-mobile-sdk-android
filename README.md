@@ -20,6 +20,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
             1. [Example](#example)
 1. [Scanning TruCodes](#scanning-trucodes)
 1. [Monitoring for an IN_PROGRESS Trusonafication](#monitoring-for-an-in_progress-trusonafication)
+1. [Processing a single trusonafication](#processing-a-single-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
 1. [Upgrading to Executive](#upgrading-to-executive)
@@ -311,13 +312,14 @@ and you'll want to stop monitoring during the `onStop` lifecycle callback.
 
 A call to the `monitorForPendingTrusonafication` method requires an implementation of `TrusonaficationHandler`.
 
-The interface has six methods:
+The interface has seven methods:
    - `void onAccept(boolean)`
    - `void onReject(boolean)`
    - `void onFailedDependency()`
    - `Integer fragmentContainerId()`
-   - `Future<Fragment> prepare(Trusonafication trusonafication)`
+   - `Fragment prepare(Trusonafication trusonafication)`
    - `Integer acceptRejectLayoutId()`
+   - `void onErrorFetchingTrusonafication(Throwable throwable)`
    
    
 #### Example
@@ -346,13 +348,14 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Integer fragmentContainerId() {
         // Update this method to return the id of the ViewGroup container into which the Trusona 
         // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
         // be present in the layout of the fragment returned by the `prepare` method implementation in
-        // this class.
+        // this class. Alternatively, this can be null if your application does not require identity
+        // document scanning.
         // i.e.: R.id.my_fragment_container.
         return 0;
     }
@@ -374,19 +377,32 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         // scanning an identity document, but the user has not registered one yet.
     }
 
-    @NonNull
+    @Nullable
     @Override
-    Future<Fragment> prepare(Trusonafication trusonafication) {
-        // This callback has 2 purposes. The first is to allow sdk developers to glean information
-        // from the incoming IN_PROGRESS trusonafication that's received as a parameter and which 
-        // the user will have to accept/reject.
-        // The second is for the sdk developers to prepare a fragment that will be used to host
-        // the SDK's identity document scanner in case the incoming trusonafication requires it.
-        // If your application does not require identity document scanning, you need to provide
-        // a fragment with an empty UI layout. In either case, this fragment should be loaded into the 
-        // current activity and it should be exposed via a Future<Fragment> and returned.
-        // Your implementation of `Future.get()` should return said fragment only after it has been 
-        // brought into the foreground and is ready to host the identity document scanner.
+    Fragment prepare(Trusonafication trusonafication) {
+        // Update this method to return an instance of the Fragment onto which you want to 
+        // load the identity document scanner or null if your application does not require
+        // identity document scanning. The Fragment must be loaded by the FragmentManager
+        // before being returned.
+        //
+        // This callback will be executed prior to the SDK challenging the user to accept a
+        // Trusonafication. You may inspect the IN_PROGRESS Trusonafication which is passed 
+        // as a parameter and perform any UI updates necessary.
+        //
+        // Note: If this method returns null and your application receives a trusonafication that
+        // requires an identity document to be scanned, the SDK will reject that trusonafication
+        // and log an error in Logcat.
+        //
+        // Sample implementation:
+        // MyFragment myFragment = MyFragment.newInstance();
+        // myActivity.getSupportFragmentManager().beginTransaction()
+        //   .add(R.id.fragment_container, myFragment).commitNow();
+        // return myFragment;
+    }
+
+    @Override
+    public void onErrorFetchingTrusonafication(Throwable throwable) {
+        // This callback will execute if something goes wrong while polling for trusonafications.
     }
 };
 
@@ -413,6 +429,93 @@ would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
 trusonafication expires, then the SDK will automatically reject it and call the `onReject(boolean success)` method 
 with a false parameter value.
+
+### Processing a single trusonafication
+
+If you'd like to process a single trusonafication without polling, you can do so by calling the `handleTrusonafication`
+sdk method that receives a `SingleTrusonaficationHandler` as a parameter. The latter is an interface similar to the 
+`TrusonaficationHandler` used when [monitoring for trusonafications](#monitoring-for-an-in_progress-trusonafication), but it has a few additional callbacks.
+
+```java
+SingleTrusonaficationHandler singleTrusonaficationHandler = new SingleTrusonaficationHandler() {
+    @Override
+    public void onTrusonaficationNotFound() {
+        // This method will execute if there are no pending
+        // trusonafications when the "trusona.handleTrusonafication"
+        // method is called
+    }
+
+    @Override
+    public void prepareForDocummentScan() {
+        // This callback will execute before the sdk loads
+        // the identitity document scanner. You may perform
+        // any UI updates necessary or do nothing.
+    }
+
+    @Override
+    public void onAccept(boolean success) {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+    }
+
+    @Override
+    public void onReject(boolean success) {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+    }
+
+    @Override
+    public void onFailedDependency() {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+    }
+
+    @Nullable
+    @Override
+    public Integer fragmentContainerId() {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Fragment prepare(Trusonafication trusonafication) {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Integer acceptRejectLayoutId() {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+        return null;
+    }
+
+    @Override
+    public void onErrorFetchingTrusonafication(Throwable throwable) {
+        // Refer to the TrusonaficationHandler implementation
+        // in the previous section for more details on this
+        // callback.
+    }
+  };
+
+  // 2
+  trusona.handleTrusonafication(singleTrusonaficationHandler);
+```
+
+1. Implement the `SingleTrusonaficationHandler` interface.
+2. Using a previously instantiated `Trusona` object, call `handleTrusonafication`, passing 
+an instance of the implemented `SingleTrusonaficationHandler` to process the most recent pending 
+`Trusonafication` if any is available.
 
 ### Scanning Driver's Licenses
 
