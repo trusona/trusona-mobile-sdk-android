@@ -318,7 +318,7 @@ The interface has seven methods:
    - `void onFailedDependency()`
    - `Integer fragmentContainerId()`
    - `Fragment prepare(Trusonafication trusonafication)`
-   - `Integer acceptRejectLayoutId()`
+   - `Dialog trusonaficationDialog(Trusonafication trusonafication)`
    - `void onErrorFetchingTrusonafication(Throwable throwable)`
    
    
@@ -362,12 +362,31 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
 
     @Nullable
     @Override
-    public Integer acceptRejectLayoutId() {
+    public Dialog trusonaficationDialog(Trusonafication trusonafication) {
         // In order to customize the UI used to prompt users to accept or reject 
-        // trusonafications you can return the ID of the xml layout you'd like to use. 
-        // Otherwise, return null to use the default OS alert dialog. 
-        // i.e.: R.layout.my_accept_reject_layout.
-        return 0; // or null
+        // trusonafications, you can return a Dialog that inflates the xml layout 
+        // you'd like to use. Otherwise, return null to use a default OS alert dialog. 
+        //
+        // You may customize the views in your Dialog by acquiring a reference to them via the 
+        // dialog.findViewById() method and then applying any changes you see fit, like adding
+        // onCLickListeners, applying spans to TextViews, etc.
+        //
+        // When using a custom Dialog, the layout it inflates must contain the following views so
+        // that the sdk can properly process the accept and reject actions of the user:
+        //
+        // * A View with the id `trusonafication_accept_button`
+        // * A view with the id `trusonafication_reject_button`
+        //
+        // The following code returns a full screen dialog that uses the my_trusonafication_layout
+        // xml file: 
+        
+        Dialog dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.my_trusonafication_layout);
+
+        // Note: Do not call the show method of the dialog instance. The SDK will do that
+        // at the appropriate moment.
+        return dialog; // or null
     }
 
     @Override
@@ -413,9 +432,10 @@ trusona.monitorForPendingTrusonafication(trusonaficationHandler);
 trusona.stopPendingTrusonaficationsMonitor();
 ```
 
-1. Implement the `TrusonaficationHandler` interface. The layout whose id is returned by the `acceptRejectLayoutId()`
-method can be styled in any way but it must contain the following views to be properly rendered:
-* A TextView with the id `trusonafication_phrase`
+1. Implement the `TrusonaficationHandler` interface. The layout used by the Dialog created in the 
+`trusonaDialog(Trusonafication trusonafication)` method can be styled in any way but it must contain
+the following views to be properly rendered and to allow the sdk to process accepting and rejecting the
+trusonafication:
 * A View with the id `trusonafication_accept_button`
 * A view with the id `trusonafication_reject_button`
 
@@ -493,7 +513,7 @@ SingleTrusonaficationHandler singleTrusonaficationHandler = new SingleTrusonafic
 
     @Nullable
     @Override
-    public Integer acceptRejectLayoutId() {
+    public Dialog trusonaficationDialog(Trusonafication trusonafication) {
         // Refer to the TrusonaficationHandler implementation
         // in the previous section for more details on this
         // callback.
