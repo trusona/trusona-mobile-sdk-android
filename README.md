@@ -105,10 +105,10 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  api "com.trusona.android:mobile-sdk:7.0.2"
+  api "com.trusona.android:mobile-sdk:7.0.3"
 
   // the following is only required if you will be using the Trusona Passport SDK
-  //api "com.trusona.android:passport-sdk:7.0.2"
+  //api "com.trusona.android:passport-sdk:7.0.3"
 }
 ```
 
