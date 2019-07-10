@@ -686,6 +686,13 @@ During the Trusonafication process, the user will be presented with several step
 The prompt and scanning screens can be customized by setting the `TrusonaficationHandler` property on the `Trusona` class to
 an instance of `TrusonaficationHandler` and having the implemented methods of this interface return the appropriate layout id.
 
+#### Custom Trusonafication metadata
+When creating a Trusonafication from one of the server SDKs, it is possible to include a set of custom fields on the Trusonafication. 
+These custom fields are made available in your implementation of `TrusonaficationHandler` when the `trusonaDialog(Trusonafication trusonafication)` 
+and `prepare(Trusonafication trusonafication)` callback methods are called and a Trusonafication is passed in as a parameter to them. 
+The custom data will be available in the `customFields` property of the Trusonafication. By inspecting the custom data in these fields, the 
+dialog behavior can be customized or the data can be shown in the dialog UI.
+
 ### Handling Deep links
 
 Your mobile application needs to be configured to handle deep links so that it can receive the data passed by the Trusona web SDKs
