@@ -188,12 +188,11 @@ The various results of a request to `getDeviceIdentifier` are:
 
 |        Result           |                                                                       Description                                                                        |  Returns Identifier?  |
 | :--------------------   | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------: |
-| `INVALID_API_KEYS`      | Indicates that the request to create the device failed because the API token and/or secret used are invalid.                                             |           No          |
+| `INVALID_CREDENTIALS`   | Indicates that the request to create the device failed because the API token and/or secret used are invalid.                                             |           No          |
 | `INVALID_DEVICE`        | Indicates that the request to create the device failed because the server determined the device to be invalid.                                           |           No          |
 | `INVALID_RELYING_PARTY` | Indicates that the request to create the device failed because the Relying Party associated with the API Token and Secret is invalid.                    |           No          |
 | `SERVER_ERROR`          | Indicates that the request to create the device failed because the server encountered an error.                                                          |           No          |
 | `UNKNOWN`               | Indicates that an unknown error occurred.                                                                                                                |           No          |
-| `TIMEOUT`               | Indicates that a timeout occurred when hitting the Trusona APIs.                                                                                         |           No          |
 
 #### Example
 
