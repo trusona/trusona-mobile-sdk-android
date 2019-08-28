@@ -19,6 +19,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
         1. [Requesting a Device Identifier](#requesting-a-device-identifier)
             1. [Example](#example)
 1. [Scanning TruCodes](#scanning-trucodes)
+    1. [Customizing the scanner UI](#customizing-the-scanner-ui)
 1. [Monitoring for an IN_PROGRESS Trusonafication](#monitoring-for-an-in_progress-trusonafication)
 1. [Processing a single trusonafication](#processing-a-single-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
@@ -247,7 +248,8 @@ TruCodes are a mechanism used to identify the user that is attempting to log int
 The Trusona SDk provides a Scanner that will recognize TruCodes and create a Trusonafication whenever one of them is
 scanned.
 
-The following example illustrates how to use the TruCode Scanner:
+The following example illustrates how to use the TruCode Scanner by loading it as a child `Fragment` of a another
+`Fragment` that's already in the foreground:
 
 ```java
 // 1
@@ -268,8 +270,8 @@ TruCodeHandler truCodeHandler = new TruCodeHandler() {
   public Integer fragmentContainerId() {
     // Update this method to return the id of the ViewGroup container into which the Trusona
     // SDK will display the TruCode Scanner. This ID must be present in the layout of the fragment
-    // that's in the foreground.
-    // i.e.: R.id.my_fragment_container.
+    // that's in the foreground and that's passed in to the loadTruCodeAsChildFragment() method.
+    // i.e.: R.id.tru_code_scanner_container.
     return null;
   }
 };
@@ -296,6 +298,35 @@ has been attached to its corresponging activity and is visible, for example, dur
 Alternatively, if you'd like to load the TruCode scanner in a layout that is not part of a `Fragment`, the 
 `getTruCodeFragment` method provides a `Fragment` reference that can be loaded using an Activity's 
 `SupportFragmentManager`.
+
+#### Customizing the scanner UI
+
+In order to customize the scanner UI, you can modify the contents of the layout xml file inflated by the `myFragment` instance passed in to the `trusona.loadTruCodeAsChildFragment(myFragment, truCodeHandler, identifierProvider)` method. 
+You'll want to arrange your custom views in such a way that they will be placed on top of the scanner's viewfinder. 
+
+The following xml layout file demonstrates how to do this:
+
+```xml
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- The id of this FrameLayout should match the one returned by your implementation of  -->
+    <!-- TrucodeHandler's `fragmentContainerId()` method. -->
+    <FrameLayout
+        android:id="@+id/tru_code_scanner_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- TODO: Place any custom views you'd like to add below this line, so that they're laid -->
+    <!-- on top of the scanner -->
+
+</FrameLayout>
+```
+
+Using this strategy, you can add any custom views you'd like on top of the scanner and you can set click 
+listeners or modify them as you would typically do: By getting a reference to them during `myFragment`'s
+`onCreateView` lifecycle method.
 
 ### Monitoring for an IN_PROGRESS Trusonafication
 
