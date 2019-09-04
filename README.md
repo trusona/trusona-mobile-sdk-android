@@ -164,10 +164,13 @@ in the Android Keystore.
 
 #### Generated Keys
 
-The Trusona SDK attempts to generate two types of keys:
+The Trusona SDK attempts to generate three types of keys:
 
 * **Device Key** - The Device Key is always generated and does not require User Presence. Using this key for signing operations will not prompt the user for any interaction with the device.
-* **User Auth Key** - The User Auth Key is generated when the user has a pin, pattern or fingerprint set. Using this key for signing operations (e.g. during a Trusonafication) will prompt the user to enter their pin, pattern or fingerprint.
+* **User Lock Screen Auth Key** - The User Lock Screen Auth Key is generated when the user has a pin, pattern or password set. Using this key for signing operations (e.g. during a Trusonafication) will prompt the user to enter their pin, pattern or password.
+* **User Fingerprint Auth Key** - The User Fingerprint Auth Key is generated when the user has at least one fingerprint enrolled on the device. Using this key for signing operations (e.g. during a Trusonafication) will prompt the user to enter their fingerprint.
+
+During signing, the SDK will give precedence to the `User Fingerprint Auth Key` but it also provides a mechanism to fall back to the `User Fingerprint Auth Key`, should the device owner be unable to present their enrolled fingerprint.
 
 #### Requesting a Device Identifier
 
