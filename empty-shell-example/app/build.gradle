@@ -29,7 +29,7 @@ android {
 dependencies {
   // api fileTree(dir: "libs", include: ["*.jar"])
 
-  api "com.trusona.android:mobile-sdk:8.1.1"
+  api "com.trusona.android:mobile-sdk:8.1.2"
 
   api "androidx.appcompat:appcompat:1.0.2"
   api "androidx.constraintlayout:constraintlayout:1.1.3"
