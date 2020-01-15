@@ -5,7 +5,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
     1. [Artifactory username and password](#artifactory-username-and-password)
-    1. [SDK API Credentials](#sdk-api-redentials)
+    1. [Minimum Android Version](#minimum-android-version)
 1. [Required Configuration](#required-configuration)
     1. [Adding your credentials to `$HOME/.gradle/gradle.properties`](#adding-your-credentials-to-$HOME/.gradle/gradle.properties)
     1. [Adding the Trusona repository to Gradle](#adding-the-trusona-repository-to-gradle)
@@ -35,20 +35,6 @@ The Trusona SDK allows simplified interaction with the Trusona API.
 Trusona uses Artifactory to distribute artifacts associated with the Trusona mobile and server SDKs.
 
 When Trusona provisions a developer account, we will create a new user in Artifactory and supply you with a username and password that you will use later on in this guide.
-
-
-### SDK API Credentials
-
-The Android SDKs require API credentials that are used by the SDK to identify and authenticate requests from your application to the Trusona APIs.
-
-The two credentials required by the SDKs include a `token` and `secret`. Both are confidential strings generated and distributed by Trusona (as shown in the sample below).
-
-```json
-{
-  "api_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJ0cnVhZG1pbi5hcGkudHJ1c29uYS5jb20iLCJzdWIiOiI1YWZmZWE3OC0xZWU1LTQxZGUtYjkzNy05M2QyYzliYTJhY2MiLCJhdWQiOiJhcGkudHJ1c29uYS5jb20iLCJleHAiOjE1MTk4ODU1NDQsImlhdCI6MTQ4ODMyNzk0NCwianRpIjoiZmI2OGNhMTItYmY1OC00MzYzLTk4M2QtODMzOTE2OTQ1YmYyIiwiYXRoIjoiUk9MRV9UUlVTVEVEX1JQX0NMSUVOVCJ9.2FNvjG9yB5DFEcNijk8TryRtKVffiDARRcRIb75Z_Pp85MxW63rhzdLFIN6PtQ1Tzb8lHPPM_4YOe-feeLOzWw",
-  "api_secret": "6b946015531bb1939b5536046c42d32c1e788e46843bc2585bc07d4bb938b4c1eb47dff1c508656d88df2c1a5e0b63728c867e7b2c6b8149b52ea67ab35d8c75"
-}
-```
 
 ### Minimum Android Version
 The Trusona SDK requires API level 21 or higher. It also requires at least Android Support Library rev. 27.1.1 and Google Play Services rev. 15.0.1.
@@ -137,20 +123,19 @@ android.useAndroidX=true
 
 ## Creating a Trusona instance
 
-To create an instance of `Trusona` for making API calls, use the provided constructor to pass the `api token`
-and `api secret`.
+To create an instance of `Trusona` for making API calls, use the provided constructor.
 
 ```java
-Trusona trusona = new Trusona(myApiToken, myApiSecret);
+Trusona trusona = new Trusona();
 ```
 
-The Trusona SDKs have infrastructure in place to serve the US, European and Asia-Pacific regions, with the US being the default one. Unless otherwise noted you will not need to configure Trusona to use a specific region. If you have been provisioned in a specific region, you will need to point the SDK to use that region. To achieve this you’ll need to specify one of the possible values from the `Region` enum when building a `Trusona` instance.
+The Trusona SDKs have infrastructure in place to serve the US, European and Asia-Pacific regions, with the US being the default one. Unless otherwise noted, you will not need to configure Trusona to use a specific region. If you have been provisioned in a specific region, you will need to point the SDK to use that region. To achieve this, you’ll need to specify one of the possible values from the `Region` enum when building a `Trusona` instance.
 
 ```java
 // Use this to connect to the European region
-Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.EU);     
+Trusona trusona = new Trusona(Region.EU);     
 //or use this to connect to the Asia-Pacific region
-Trusona trusona = new Trusona(myApiToken, myApiSecret, Region.AP);
+Trusona trusona = new Trusona(Region.AP);
 ```
 
 ### Device Identifier
@@ -192,9 +177,7 @@ The various results of a request to `getDeviceIdentifier` are:
 
 |        Result           |                                                                       Description                                                                        |  Returns Identifier?  |
 | :--------------------   | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------: |
-| `INVALID_CREDENTIALS`   | Indicates that the request to create the device failed because the API token and/or secret used are invalid.                                             |           No          |
 | `INVALID_DEVICE`        | Indicates that the request to create the device failed because the server determined the device to be invalid.                                           |           No          |
-| `INVALID_RELYING_PARTY` | Indicates that the request to create the device failed because the Relying Party associated with the API Token and Secret is invalid.                    |           No          |
 | `SERVER_ERROR`          | Indicates that the request to create the device failed because the server encountered an error.                                                          |           No          |
 | `UNKNOWN`               | Indicates that an unknown error occurred.                                                                                                                |           No          |
 
@@ -218,11 +201,8 @@ DeviceIdentifierRequester deviceIdentifierRequester = new DeviceIdentifierReques
                 // A device identifier is available in these scenarios.
                 break;
 
-            case INVALID_API_KEYS:
             case INVALID_DEVICE:
-            case INVALID_RELYING_PARTY:
             case SERVER_ERROR:
-            case TIMEOUT:
             case UNKNOWN:
                 // A device identifier is not available in these scenarios.
                 break;
