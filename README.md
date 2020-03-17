@@ -92,7 +92,7 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  api "com.trusona.android:mobile-sdk:9.0.0"
+  api "com.trusona.android:mobile-sdk:10.0.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
   //api "com.trusona.android:passport-sdk:8.0.0"
@@ -137,6 +137,15 @@ Trusona trusona = new Trusona(Region.EU);
 //or use this to connect to the Asia-Pacific region
 Trusona trusona = new Trusona(Region.AP);
 ```
+
+If you have deployed your own infrastructure, you can customize the SDK to use it by providing the base url that points to it, as shown below:
+
+```java
+CustomBaseUrl customBaseUrl = new CustomBaseUrl("https://my.custom.base.url.net");
+Trusona trusona = new Trusona(customBaseUrl);
+```
+
+Note that if the url is incorrectly formatted, the sdk will default to using the US infrastructure.
 
 ### Device Identifier
 
