@@ -334,14 +334,12 @@ and you'll want to stop monitoring during the `onStop` lifecycle callback.
 
 A call to the `monitorForPendingTrusonafication` method requires an implementation of `TrusonaficationHandler`.
 
-The interface has seven methods:
-   - `void onAccept(boolean)`
-   - `void onReject(boolean)`
-   - `void onFailedDependency()`
+The interface has five methods:
+   - `void onComplete(TrusonaficationStatus)`
    - `Integer fragmentContainerId()`
    - `Fragment prepare(Trusonafication trusonafication)`
    - `Dialog trusonaficationDialog(Trusonafication trusonafication)`
-   - `void onErrorFetchingTrusonafication(Throwable throwable)`
+   - `void onError(Throwable throwable)`
    
    
 #### Example
@@ -349,25 +347,31 @@ The interface has seven methods:
 ```java
 // 1
 TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
+
     @Override
-    public void onAccept(boolean success) {
-        if(success) {
-            // trusonafication was successfully accepted and validated
-        }
-        else {
-            // the user intent was to accept it; but the request failed
-        }
-    }
-    
-    @OVerride
-    public void onReject(boolean success) {
-        if(success) {
-            // the user's intent to reject the trusonafication was completed successfully
-        }
-        else {
-            // Either the user's intent to reject the trusonafication failed or the trusonafication
-            // timed out and it was automatically rejected by the SDK.
-        }
+    public void onComplete(TrusonaficationStatus trusonaficationStatus) {
+      switch (trusonaficationStatus) {
+
+        case REJECTED:
+          // the user's intent to reject the trusonafication was completed successfully
+          break;
+
+        case ACCEPTED:
+          // trusonafication was successfully accepted and validated
+          break;
+
+        case CANCELED:
+          // the trusonafication was canceled before the user was able to accept or reject it.
+          break;
+
+        case FAILED:
+          // the user intent was to either accept it or reject it; but the request failed
+          break;
+
+        case EXPIRED:
+          // the trusonafication timed out and it was automatically rejected by the SDK.
+          break;
+      }
     }
 
     @Nullable
@@ -442,8 +446,22 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
     }
 
     @Override
-    public void onErrorFetchingTrusonafication(Throwable throwable) {
-        // This callback will execute if something goes wrong while polling for trusonafications.
+    public void onError(Throwable throwable) {
+        // This callback will execute if something goes wrong while processing a trusonafications
+        // Some of the possible exceptions that can trigger this callback are:
+        //
+        // 1. InvalidIdentityDocumentException: Used when the scanned Identity document is not in 
+        // AAMVA format or it was not accepted by the trusona servers
+        // 
+        // 2. RequiredIdentityDocumentException: Used when a trusonafication required that the user
+        // presents their Identity Document but they have not registered one to their account yet
+        // or a Driver license scanner has not been properly set up.
+        // 
+        // 3. TrusonaficationFetchingException: Used when an error occurs while attempting to retrieve
+        // a trusonafication from the Trusona backend.
+        //
+        // 4. TrusonaficationNotFoundException: Used when a trusonafication was not found in the Trusona
+        // backend.
     }
 };
 
@@ -469,94 +487,25 @@ would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 `Fragment`'s  `onStop` life cycle method.
 
 It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
-trusonafication expires, then the SDK will automatically reject it and call the `onReject(boolean success)` method 
-with a false parameter value.
+trusonafication expires, then the SDK will automatically reject it and call the `onComplete(TrusonaficationStatus)` 
+method with a parameter value of `TrusonaficationStatus.EXPIRED`.
 
 ### Processing a single trusonafication
 
 If you'd like to process a single trusonafication without polling, you can do so by calling the `handleTrusonafication`
-sdk method that receives a `SingleTrusonaficationHandler` as a parameter. The latter is an interface similar to the 
-`TrusonaficationHandler` used when [monitoring for trusonafications](#monitoring-for-an-in_progress-trusonafication), but it has a few additional callbacks.
+sdk method that receives a `TrusonaficationHandler` as a parameter.
 
 ```java
-SingleTrusonaficationHandler singleTrusonaficationHandler = new SingleTrusonaficationHandler() {
-    @Override
-    public void onTrusonaficationNotFound() {
-        // This method will execute if there are no pending
-        // trusonafications when the "trusona.handleTrusonafication"
-        // method is called
-    }
-
-    @Override
-    public void prepareForDocummentScan() {
-        // This callback will execute before the sdk loads
-        // the identitity document scanner. You may perform
-        // any UI updates necessary or do nothing.
-    }
-
-    @Override
-    public void onAccept(boolean success) {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-    }
-
-    @Override
-    public void onReject(boolean success) {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-    }
-
-    @Override
-    public void onFailedDependency() {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-    }
-
-    @Nullable
-    @Override
-    public Integer fragmentContainerId() {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Fragment prepare(Trusonafication trusonafication) {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Dialog trusonaficationDialog(Trusonafication trusonafication) {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-        return null;
-    }
-
-    @Override
-    public void onErrorFetchingTrusonafication(Throwable throwable) {
-        // Refer to the TrusonaficationHandler implementation
-        // in the previous section for more details on this
-        // callback.
-    }
-  };
+  // 1
+  TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {...}
 
   // 2
   trusona.handleTrusonafication(singleTrusonaficationHandler);
 ```
 
-1. Implement the `SingleTrusonaficationHandler` interface.
+1. Implement the `TrusonaficationHandler` interface. For more details, see [monitoring for trusonafications](#monitoring-for-an-in_progress-trusonafication).
 2. Using a previously instantiated `Trusona` object, call `handleTrusonafication`, passing 
-an instance of the implemented `SingleTrusonaficationHandler` to process the most recent pending 
+an instance of the implemented `TrusonaficationHandler` to process the most recent pending 
 `Trusonafication` if any is available.
 
 ### Scanning Driver's Licenses
