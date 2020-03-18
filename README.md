@@ -447,7 +447,7 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
 
     @Override
     public void onError(Throwable throwable) {
-        // This callback will execute if something goes wrong while processing a trusonafications
+        // This callback will execute if something goes wrong while processing a trusonafication
         // Some of the possible exceptions that can trigger this callback are:
         //
         // 1. InvalidIdentityDocumentException: Used when the scanned Identity document is not in 
