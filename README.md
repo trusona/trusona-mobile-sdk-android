@@ -20,7 +20,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
             1. [Example](#example)
 1. [Scanning TruCodes](#scanning-trucodes)
     1. [Customizing the scanner UI](#customizing-the-scanner-ui)
-1. [Monitoring for an IN_PROGRESS Trusonafication](#monitoring-for-an-in_progress-trusonafication)
+1. [Polling for an IN_PROGRESS Trusonafication](#polling-for-an-in_progress-trusonafication)
 1. [Processing a single trusonafication](#processing-a-single-trusonafication)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
@@ -92,7 +92,7 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  api "com.trusona.android:mobile-sdk:10.0.0"
+  api "com.trusona.android:mobile-sdk:11.0.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
   //api "com.trusona.android:passport-sdk:8.0.0"
@@ -114,7 +114,7 @@ compileOptions {
 
 The SDK has dependencies on the latest [AndroidX](https://developer.android.com/jetpack/androidx) libraries.
 
-For normal function and compatibility with legacy support librabries, add the following configuration to your project's `gradle.properties` file:
+For normal function and compatibility with legacy support libraries, add the following configuration to your project's `gradle.properties` file:
 
 ```
 android.enableJetifier=true
@@ -240,7 +240,7 @@ TruCodes are a mechanism used to identify the user that is attempting to log int
 The Trusona SDk provides a Scanner that will recognize TruCodes and create a Trusonafication whenever one of them is
 scanned.
 
-The following example illustrates how to use the TruCode Scanner by loading it as a child `Fragment` of a another
+The following example illustrates how to use the TruCode Scanner by loading it as a child `Fragment` of an another
 `Fragment` that's already in the foreground:
 
 ```java
@@ -283,9 +283,8 @@ trusona.loadTruCodeAsChildFragment(myFragment, truCodeHandler, identifierProvide
 
 1. Implement the `TruCodeHandler` interface, which will be notified when the Trucode has been scanned.
 2. Implement the `IdentifierProvider` to return the device's identifier
-3. Invoke the Trusona API passing in the implemented interfaces and a reference to the `Fragment` where 
-the TruCode Scanner should be displayed. This API call should be done once the `Fragment` passed as a parameter
-has been attached to its corresponging activity and is visible, for example, during it's `onViewCreated` method.
+3. Invoke the Trusona API passing in the implemented interfaces and a reference to the `Fragment` where the TruCode Scanner should be displayed. This API call should be done once the `Fragment` passed as a parameter
+has been attached to its corresponding activity and is visible, for example, during it's `onViewCreated` method.
 
 Alternatively, if you'd like to load the TruCode scanner in a layout that is not part of a `Fragment`, the 
 `getTruCodeFragment` method provides a `Fragment` reference that can be loaded using an Activity's 
@@ -320,79 +319,53 @@ Using this strategy, you can add any custom views you'd like on top of the scann
 listeners or modify them as you would typically do: By getting a reference to them during `myFragment`'s
 `onCreateView` lifecycle method.
 
-### Monitoring for an IN_PROGRESS Trusonafication
+### Polling for an IN_PROGRESS Trusonafication
 
 A Trusonafication occurs when a user attempts to access a protected resource, and the user is allowed
 to accept or deny the action. When a Trusonafication is received, the app needs to respond to confirm
 the user's identity. Depending on how the Trusonafication was created, this may involve a visual prompt
 requiring the user to accept and/or provide the credentials used to unlock the device.
 
-Monitoring for in progress trusonafications should happen only when your application is in the foreground.
+Polling for in progress trusonafications should happen only when your application is in the foreground.
 Conversely, you should stop monitoring for trusonafications when your app is sent to the background. Typically
-you'll want to start the monitoring process in your `Activity`'s or `Fragment`'s `onResume` lifecycle callback
-and you'll want to stop monitoring during the `onStop` lifecycle callback.
+you'll want to start the polling process in your `Activity`'s or `Fragment`'s `onResume` lifecycle callback, however, the SDK will stop automatically the polling process for you during the `onStop` lifecycle callback.
 
-A call to the `monitorForPendingTrusonafication` method requires an implementation of `TrusonaficationHandler`.
+A call to the `startTrusonaficationActivityForPolling` method requires an instance of `AppCompatActivity` in order to start a new Activity in charge to start and stop the polling process.
+
+#### Example
+
+```java
+trusona.startTrusonaficationActivityForPolling(appCompatActivity);
+```
+
+Additionally there is a second method which also requires an implementation of `TrusonaficationUICustomizations` in order to customize the Trusonafication UI, if no customization is required, use the previous method instead. 
 
 The interface has five methods:
-   - `void onComplete(TrusonaficationStatus)`
-   - `Integer fragmentContainerId()`
-   - `Fragment prepare(Trusonafication trusonafication)`
-   - `Dialog trusonaficationDialog(Trusonafication trusonafication)`
-   - `void onError(Throwable throwable)`
-   
+   - `boolean usesCustomDialog()`
+   - `Dialog trusonaficationDialog(Context context, Trusonafication trusonafication)`  
+   - `boolean usesCustomDLScanner()`
+   - `Fragment getCustomDLScanner(Trusonafication trusonafication)`
+   - `Integer getDLScannerContainerId()`
    
 #### Example
 
 ```java
 // 1
-TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
-
+TrusonaficationUICustomizations trusonaficationUICustomizations = new TrusonaficationUICustomizations() {
+  
     @Override
-    public void onComplete(TrusonaficationStatus trusonaficationStatus) {
-      switch (trusonaficationStatus) {
-
-        case REJECTED:
-          // the user's intent to reject the trusonafication was completed successfully
-          break;
-
-        case ACCEPTED:
-          // trusonafication was successfully accepted and validated
-          break;
-
-        case CANCELED:
-          // the trusonafication was canceled before the user was able to accept or reject it.
-          break;
-
-        case FAILED:
-          // the user intent was to either accept it or reject it; but the request failed
-          break;
-
-        case EXPIRED:
-          // the trusonafication timed out and it was automatically rejected by the SDK.
-          break;
-      }
+    public boolean usesCustomDialog() {
+        // In order to let the sdk known if a custom dialog is used
+        return true;
     }
 
-    @Nullable
     @Override
-    public Integer fragmentContainerId() {
-        // Update this method to return the id of the ViewGroup container into which the Trusona 
-        // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
-        // be present in the layout of the fragment returned by the `prepare` method implementation in
-        // this class. Alternatively, this can be null if your application does not require identity
-        // document scanning.
-        // i.e.: R.id.my_fragment_container.
-        return 0;
-    }
-
-    @Nullable
-    @Override
-    public Dialog trusonaficationDialog(Trusonafication trusonafication) {
+    public Dialog trusonaficationDialog(Context context, Trusonafication trusonafication) {
+    
         // In order to customize the UI used to prompt users to accept or reject 
         // trusonafications, you can return a Dialog that inflates the xml layout 
         // you'd like to use. Otherwise, return null to use a default OS alert dialog. 
-        //
+
         // You may customize the views in your Dialog by acquiring a reference to them via the 
         // dialog.findViewById() method and then applying any changes you see fit, like adding
         // onCLickListeners, applying spans to TextViews, etc.
@@ -405,26 +378,25 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         //
         // The following code returns a full screen dialog that uses the my_trusonafication_layout
         // xml file: 
-        
+
         Dialog dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.my_trusonafication_layout);
 
-        // Note: Do not call the show method of the dialog instance. The SDK will do that
+         // Note: Do not call the show method of the dialog instance. The SDK will do that
         // at the appropriate moment.
         return dialog; // or null
     }
 
     @Override
-    void onFailedDependency() {
-        // Update this method to handle the case of when a required dependency to process
-        // an IN_PROGRESS trusonafication fails, for instance if the trusonafication requires
-        // scanning an identity document, but the user has not registered one yet.
+    public boolean usesCustomDLScanner() {
+        // In order to let the sdk known if a custom Driver license scanner is used
+        return true;
     }
 
-    @Nullable
     @Override
-    Fragment prepare(Trusonafication trusonafication) {
+    Fragment getCustomDLScanner(Trusonafication trusonafication) {
         // Update this method to return an instance of the Fragment onto which you want to 
         // load the identity document scanner or null if your application does not require
         // identity document scanning. The Fragment must be loaded by the FragmentManager
@@ -445,68 +417,114 @@ TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {
         // return myFragment;
     }
 
+    @IdRes
     @Override
-    public void onError(Throwable throwable) {
-        // This callback will execute if something goes wrong while processing a trusonafication
-        // Some of the possible exceptions that can trigger this callback are:
-        //
-        // 1. InvalidIdentityDocumentException: Used when the scanned Identity document is not in 
-        // AAMVA format or it was not accepted by the trusona servers
-        // 
-        // 2. RequiredIdentityDocumentException: Used when a trusonafication required that the user
-        // presents their Identity Document but they have not registered one to their account yet
-        // or a Driver license scanner has not been properly set up.
-        // 
-        // 3. TrusonaficationFetchingException: Used when an error occurs while attempting to retrieve
-        // a trusonafication from the Trusona backend.
-        //
-        // 4. TrusonaficationNotFoundException: Used when a trusonafication was not found in the Trusona
-        // backend.
+    public Integer getDLScannerContainerId() {
+        // Update this method to return the id of the ViewGroup container into which the Trusona 
+        // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
+        // be present in the layout of the fragment returned by the `getCustomDLScanner` method implementation in
+        // this class. Alternatively, this can be null if your application does not require identity
+        // document scanning.
+        // i.e.: R.id.my_fragment_container.
+        return 0;
     }
 };
 
 // 2
-trusona.monitorForPendingTrusonafication(trusonaficationHandler);
-
-// 3
-trusona.stopPendingTrusonaficationsMonitor();
+trusona.startTrusonaficationActivityForPolling(appCompatActivity, trusonaficationUICustomizations);
 ```
 
-1. Implement the `TrusonaficationHandler` interface. The layout used by the Dialog created in the 
-`trusonaDialog(Trusonafication trusonafication)` method can be styled in any way but it must contain
+1. Implement the `TrusonaficationUICustomizations` interface. The layout used by the Dialog created in the 
+`trusonaficationDialog(Context context, Trusonafication trusonafication)` method can be styled in any way but it must contain
 the following views to be properly rendered and to allow the sdk to process accepting and rejecting the
 trusonafication:
 * A View with the id `trusonafication_accept_button`
 * A view with the id `trusonafication_reject_button`
 
-2. Using a previously instantiated `Trusona` object, call `monitorForPendingTrusonafication`, passing 
-an instance of the implemented `TrusonaficationHandler` to monitor for a pending `Trusonafication`. Usually you
+2. Using a previously instantiated `Trusona` object, call `startTrusonaficationActivityForPolling`, passing 
+an instance of the implemented `TrusonaficationUICustomizations` to poll for a pending `Trusonafication`. Usually you
 would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 
-3. To stop monitoring for trusonafications, call `stopPendingTrusonaficationsMonitor` in your `Activity`'s or 
-`Fragment`'s  `onStop` life cycle method.
+3. To stop polling for trusonafications, the started activity will stop   polling at the end of the trusonafication handling process or whenever 
+the `onStop` life cycle method is called.
 
 It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
-trusonafication expires, then the SDK will automatically reject it and call the `onComplete(TrusonaficationStatus)` 
-method with a parameter value of `TrusonaficationStatus.EXPIRED`.
+trusonafication expires, then the SDK will automatically reject it and
+call the `setResult(Activity.RESULT_OK, resultIntent)` with a bundle value of the Trusonafication with its status as `TrusonaficationStatus.EXPIRED`.
 
 ### Processing a single trusonafication
 
-If you'd like to process a single trusonafication without polling, you can do so by calling the `handleTrusonafication`
-sdk method that receives a `TrusonaficationHandler` as a parameter.
+Alternatively there is another method to poll for a single trusonafication, you can do so by calling the `pollFromCurrentActivity` sdk method that receives an instance of `AppCompatActivity` and the `Trusonafication` that you want to process as parameters.
 
 ```java
-  // 1
-  TrusonaficationHandler trusonaficationHandler = new TrusonaficationHandler() {...}
+// 1
 
-  // 2
-  trusona.handleTrusonafication(singleTrusonaficationHandler);
+PollerStopper pollerStopper = trusona.pollFromCurrentActivity(appCompatActivity, trusonaficationUICustomizations);
+
+pollerStopper.stop();
 ```
 
-1. Implement the `TrusonaficationHandler` interface. For more details, see [monitoring for trusonafications](#monitoring-for-an-in_progress-trusonafication).
-2. Using a previously instantiated `Trusona` object, call `handleTrusonafication`, passing 
-an instance of the implemented `TrusonaficationHandler` to process the most recent pending 
+In this case, `pollFromCurrentActivity` returns a `PollerStopper` object, which is used to stop polling on demand by calling the `stop()` method in it.
+
+1. Implement the `TrusonaficationUICustomizations` interface. For more details, see [polling for trusonafications](#polling-for-an-in_progress-trusonafication).
+2. Using a previously instantiated `Trusona` object, call `pollFromCurrentActivity`, passing 
+an instance of `AppCompatActivity` and an instance of the implemented `TrusonaficationUICustomizations` to process the most recent pending 
 `Trusonafication` if any is available.
+
+If you'd like to process a single trusonafication without polling, you can do so by calling the `startTrusonaficationActivity`
+sdk method that receives an instance of `AppCompatActivity` and the `Trusonafication` that you want to process as parameters.
+
+```java
+trusona.startTrusonaficationActivity(appCompatActivity, trusonafication);
+```
+
+There are also alternative methods to provide customization to the trusonafication handling process. 
+
+```java
+trusona.startTrusonaficationActivity(appCompatActivity, trusonafication, trusonaficationUICustomizations);
+```
+
+Internally all the `startTrusonaficationActivity` methods call `startActivityForResult`, so the given instance of `AppCompatActivity` needs to implement the `onActivityResult` method to capture the handling trusonafication outcome.
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == TrusonaficationActivity.TRUSONAFICATION_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+        /**
+        This Throwable will be returned if something goes wrong while processing a trusonafication. **/
+        Throwable error = (Throwable) data.getSerializableExtra(TrusonaficationActivity.ERROR_KEY);
+
+        // Some of the possible exceptions that can trigger this callback are:
+        if (error instanceof RequiredIdentityDocumentException) {
+        /** Used when a trusonafication required that the user
+            presents their Identity Document but they have not registered one to their account yet
+            or a Driver license scanner has not been properly set up. **/
+        }
+        else if (error instanceof InvalidIdentityDocumentException) {
+        /** Used when the scanned Identity document is not in 
+            AAMVA format or it was not accepted by the trusona servers. **/
+        }
+        else if (error instanceof TrusonaficationNotFoundException) {
+        /** Used when a trusonafication was not found in the Trusona
+            backend. **/
+        }
+        else {
+        //Unexpected type of exception
+        }
+
+        Trusonafication trusonafication;
+        try {
+        trusonafication = TrusonaficationParser.getFromIntent(data);
+        }
+        catch (IllegalArgumentException e) {
+        trusonafication = null;
+        //Trusonafication not present in intent data
+        }
+    }
+}
+  ```
+
 
 ### Scanning Driver's Licenses
 
@@ -654,13 +672,13 @@ During the Trusonafication process, the user will be presented with several step
 - An operating system authentication (e.g. Fingerprint, Pattern, PIN)
 - Scanning of driver's license
 
-The prompt and scanning screens can be customized by setting the `TrusonaficationHandler` property on the `Trusona` class to
-an instance of `TrusonaficationHandler` and having the implemented methods of this interface return the appropriate layout id.
+The prompt and scanning screens can be customized by setting the `TrusonaficationUICustomizations` property on the `Trusona` class to
+an instance of `TrusonaficationUICustomizations` and having the implemented methods of this interface return the appropriate layout id.
 
 #### Custom Trusonafication metadata
 When creating a Trusonafication from one of the server SDKs, it is possible to include a set of custom fields on the Trusonafication. 
-These custom fields are made available in your implementation of `TrusonaficationHandler` when the `trusonaDialog(Trusonafication trusonafication)` 
-and `prepare(Trusonafication trusonafication)` callback methods are called and a Trusonafication is passed in as a parameter to them. 
+These custom fields are made available in your implementation of `TrusonaficationUICustomizations` when the `trusonaDialog(Context context, Trusonafication trusonafication)` 
+and `getCustomDLScanner(Trusonafication trusonafication)` callback methods are called and a Trusonafication is passed in as a parameter to them. 
 The custom data will be available in the `customFields` property of the Trusonafication. By inspecting the custom data in these fields, the 
 dialog behavior can be customized or the data can be shown in the dialog UI.
 
@@ -732,8 +750,6 @@ protected void onStop() {
     // 3
     trusona.stopPendingTrusonaficationsMonitor();
 }
-
-
 ```
 
 1. Provide an implementation of the `TruCodeHandler` interface.
