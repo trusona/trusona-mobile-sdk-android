@@ -484,7 +484,7 @@ There are also alternative methods to provide customization to the trusonaficati
 trusona.startTrusonaficationActivity(appCompatActivity, trusonafication, trusonaficationUICustomizations);
 ```
 
-Internally all the `startTrusonaficationActivity` methods call `startActivityForResult`, so the given instance of `AppCompatActivity` needs to implement the `onActivityResult` method to capture the handling trusonafication outcome.
+Internally the `startTrusonaficationActivity` and `startTrusonaficationActivityForPolling` methods call `startActivityForResult`, so the given instance of `AppCompatActivity` needs to implement the `onActivityResult` method to capture the handling trusonafication outcome.
 
 ```java
 @Override
