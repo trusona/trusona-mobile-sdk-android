@@ -240,7 +240,7 @@ TruCodes are a mechanism used to identify the user that is attempting to log int
 The Trusona SDk provides a Scanner that will recognize TruCodes and create a Trusonafication whenever one of them is
 scanned.
 
-The following example illustrates how to use the TruCode Scanner by loading it as a child `Fragment` of an another
+The following example illustrates how to use the TruCode Scanner by loading it as a child `Fragment` of another
 `Fragment` that's already in the foreground:
 
 ```java
