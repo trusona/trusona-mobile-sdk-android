@@ -417,7 +417,8 @@ public class MyActivity extends AppCompatActivity {
         break;
 
       case EXPIRED:
-        // The user did not accept or reject the trusonafication during it's validity period
+        // The user did not accept or reject the trusonafication during it's validity period,
+        // which by default is 2 minutes.
         break;
 
       case CANCELED:
@@ -552,10 +553,6 @@ would do this in your `Activity`'s or `Fragment`'s `onResume` method.
 
 3. To stop polling for trusonafications, the started activity will stop   polling at the end of the trusonafication handling process or whenever 
 the `onStop` life cycle method is called.
-
-It's important to note that trusonafications can expire after a period of time (the default being 2 minutes). If a 
-trusonafication expires, then the SDK will automatically reject it and
-call the `setResult(Activity.RESULT_OK, resultIntent)` with a bundle value of the Trusonafication with its status as `TrusonaficationStatus.EXPIRED`.
 
 ### Processing a single trusonafication
 
