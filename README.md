@@ -327,16 +327,121 @@ the user's identity. Depending on how the Trusonafication was created, this may 
 requiring the user to accept and/or provide the credentials used to unlock the device.
 
 Polling for in progress trusonafications should happen only when your application is in the foreground.
-Conversely, you should stop monitoring for trusonafications when your app is sent to the background. Typically
-you'll want to start the polling process in your `Activity`'s or `Fragment`'s `onResume` lifecycle callback, however, the SDK will stop automatically the polling process for you during the `onStop` lifecycle callback.
+Typically you'll want to start the polling process in your `Activity`'s or `Fragment`'s `onResume` or
+`onCreate` lifecycle callback. The SDK will automatically stop the polling process for you during the 
+`onStop` lifecycle callback, however, if you need to stop polling at a particular point in time, you may 
+use the `PollerStopper` object returned by the `startPolling` method.
 
-A call to the `startTrusonaficationActivityForPolling` method requires an instance of `AppCompatActivity` in order to start a new Activity in charge to start and stop the polling process.
+A call to the `startPolling` method requires an instance of `AppCompatActivity` in order to start a new
+SDK controlled Activity when a Trusonafication is received. The latter is invoked via the `startActivityForResult`
+method, so the calling `AppCompatActivity` must implement `onActivityResult` in order to receive the
+outcome of the processed `Trusonafication`.
 
 #### Example
 
 ```java
-trusona.startTrusonaficationActivityForPolling(appCompatActivity);
+public class MyActivity extends AppCompatActivity {
+
+  private Trusona trusona = new Trusona();
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // 1
+    trusona.startPolling(this);
+  }
+
+  // 2
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == TrusonaficationActivity.TRUSONAFICATION_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+
+      // 3
+      Trusonafication trusonafication;
+      try {
+        trusonafication = TrusonaficationParser.getFromIntent(data);
+      }
+      catch (IllegalArgumentException e) {
+        trusonafication = null;
+        //Trusonafication not present in intent data
+      }
+
+      // 4
+      /* This Throwable will be returned if something goes wrong while processing a trusonafication. */
+      Throwable error = (Throwable) data.getSerializableExtra(TrusonaficationActivity.ERROR_KEY);
+
+      if (trusonafication != null && error == null) {
+        // 5
+        handleTrusonaficationResult(trusonafication);
+      }
+      else {
+        // 6
+        handleError(error);
+      }
+    }
+  }
+
+  private void handleError(Throwable error) {
+    // Some of the possible exceptions that can be received are:
+    if (error instanceof RequiredIdentityDocumentException) {
+        /* Used when a trusonafication required that the user
+         presents their Identity Document but they have not registered one to their account yet */
+    }
+    else if (error instanceof InvalidIdentityDocumentException) {
+        /* Used when the scanned Identity document is not in
+         AAMVA format or it was not accepted by the trusona servers. */
+    }
+    else if (error instanceof UnavailableDeviceSecurityException) {
+      /* Used when the trusonafication requires that the device has enabled a pin/pattern/password/biometric
+      but it hasn't. */
+    }
+    else {
+      //Unexpected type of exception
+    }
+  }
+
+  private void handleTrusonaficationResult(Trusonafication trusonafication) {
+    switch (trusonafication.getStatus()) {
+
+      case ACCEPTED:
+        // The trusonafication was successfully accepted by the user
+        break;
+
+      case REJECTED:
+        // The trusonafication was successfully rejected by the user
+        break;
+
+      case FAILED:
+        // The user attempted to accept or reject the trusonafication but an error occurred
+        break;
+
+      case EXPIRED:
+        // The user did not accept or reject the trusonafication during it's validity period
+        break;
+
+      case CANCELED:
+        // The trusonafication was cancelled
+        break;
+
+      case IN_PROGRESS:
+        // The trusonafication is still in progress. This means the user backed out of the trusonafication
+        // process, typically by sending the app to the background via the device's home button.
+        break;
+
+      default:
+        break;
+    }
+  }
+}
 ```
+
+1. Call `trusona.startPolling(this)` during the Activity's `onCreate` method.
+2. Override `onActivityResult` so you can receive the trusonafication result passed back by the SDK.
+3. Use the `TrusonaficationParser` to acquire the processed `Trusonafication` from the passed in `Intent`.
+4. Query the passed in `Intent` for any errors that may have been thrown during the trusonafication process.
+5. If no errors were thrown, handle the trusonafication result by examining its `TrusonaficationStatus`.
+6. If an error was thrown, handle accordingly.
 
 Additionally there is a second method which also requires an implementation of `TrusonaficationUICustomizations` in order to customize the Trusonafication UI, if no customization is required, use the previous method instead. 
 
