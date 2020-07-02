@@ -327,10 +327,10 @@ the user's identity. Depending on how the Trusonafication was created, this may 
 requiring the user to accept and/or provide the credentials used to unlock the device.
 
 Polling for in progress trusonafications should happen only when your application is in the foreground.
-Typically you'll want to start the polling process in your `Activity`'s or `Fragment`'s `onResume` or
-`onCreate` lifecycle callback. The SDK will automatically stop the polling process for you during the 
-`onStop` lifecycle callback, however, if you need to stop polling at a particular point in time, you may 
-use the `PollerStopper` object returned by the `startPolling` method.
+Typically you'll want to start the polling process in your `Activity`'s `onResume` or `onCreate` lifecycle
+callback. The SDK will automatically stop the polling process for you during the `onStop` lifecycle 
+callback, however, if you need to stop polling at a particular point in time, you may use the `stop()`
+method of the `PollerStopper` object returned by the `startPolling` method.
 
 A call to the `startPolling` method requires an instance of `AppCompatActivity` in order to start a new
 SDK controlled Activity when a Trusonafication is received. The latter is invoked via the `startActivityForResult`
@@ -443,116 +443,6 @@ public class MyActivity extends AppCompatActivity {
 4. Query the passed in `Intent` for any errors that may have been thrown during the trusonafication process.
 5. If no errors were thrown, handle the trusonafication result by examining its `TrusonaficationStatus`.
 6. If an error was thrown, handle accordingly.
-
-Additionally there is a second method which also requires an implementation of `TrusonaficationUICustomizations` in order to customize the Trusonafication UI, if no customization is required, use the previous method instead. 
-
-The interface has five methods:
-   - `boolean usesCustomDialog()`
-   - `Dialog trusonaficationDialog(Context context, Trusonafication trusonafication)`  
-   - `boolean usesCustomDLScanner()`
-   - `Fragment getCustomDLScanner(Trusonafication trusonafication)`
-   - `Integer getDLScannerContainerId()`
-   
-#### Example
-
-```java
-// 1
-TrusonaficationUICustomizations trusonaficationUICustomizations = new TrusonaficationUICustomizations() {
-  
-    @Override
-    public boolean usesCustomDialog() {
-        // In order to let the sdk known if a custom dialog is used
-        return true;
-    }
-
-    @Override
-    public Dialog trusonaficationDialog(Context context, Trusonafication trusonafication) {
-    
-        // In order to customize the UI used to prompt users to accept or reject 
-        // trusonafications, you can return a Dialog that inflates the xml layout 
-        // you'd like to use. Otherwise, return null to use a default OS alert dialog. 
-
-        // You may customize the views in your Dialog by acquiring a reference to them via the 
-        // dialog.findViewById() method and then applying any changes you see fit, like adding
-        // onCLickListeners, applying spans to TextViews, etc.
-        //
-        // When using a custom Dialog, the layout it inflates must contain the following views so
-        // that the sdk can properly process the accept and reject actions of the user:
-        //
-        // * A View with the id `trusonafication_accept_button`
-        // * A view with the id `trusonafication_reject_button`
-        //
-        // The following code returns a full screen dialog that uses the my_trusonafication_layout
-        // xml file: 
-
-        Dialog dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.my_trusonafication_layout);
-
-         // Note: Do not call the show method of the dialog instance. The SDK will do that
-        // at the appropriate moment.
-        return dialog; // or null
-    }
-
-    @Override
-    public boolean usesCustomDLScanner() {
-        // In order to let the sdk known if a custom Driver license scanner is used
-        return true;
-    }
-
-    @Override
-    Fragment getCustomDLScanner(Trusonafication trusonafication) {
-        // Update this method to return an instance of the Fragment onto which you want to 
-        // load the identity document scanner or null if your application does not require
-        // identity document scanning. The Fragment must be loaded by the FragmentManager
-        // before being returned.
-        //
-        // This callback will be executed prior to the SDK challenging the user to accept a
-        // Trusonafication. You may inspect the IN_PROGRESS Trusonafication which is passed 
-        // as a parameter and perform any UI updates necessary.
-        //
-        // Note: If this method returns null and your application receives a trusonafication that
-        // requires an identity document to be scanned, the SDK will reject that trusonafication
-        // and log an error in Logcat.
-        //
-        // Sample implementation:
-        // MyFragment myFragment = MyFragment.newInstance();
-        // myActivity.getSupportFragmentManager().beginTransaction()
-        //   .add(R.id.fragment_container, myFragment).commitNow();
-        // return myFragment;
-    }
-
-    @IdRes
-    @Override
-    public Integer getDLScannerContainerId() {
-        // Update this method to return the id of the ViewGroup container into which the Trusona 
-        // SDK will display an identity document scanner if a Trusonafication requires it. This ID must 
-        // be present in the layout of the fragment returned by the `getCustomDLScanner` method implementation in
-        // this class. Alternatively, this can be null if your application does not require identity
-        // document scanning.
-        // i.e.: R.id.my_fragment_container.
-        return 0;
-    }
-};
-
-// 2
-trusona.startTrusonaficationActivityForPolling(appCompatActivity, trusonaficationUICustomizations);
-```
-
-1. Implement the `TrusonaficationUICustomizations` interface. The layout used by the Dialog created in the 
-`trusonaficationDialog(Context context, Trusonafication trusonafication)` method can be styled in any way but it must contain
-the following views to be properly rendered and to allow the sdk to process accepting and rejecting the
-trusonafication:
-* A View with the id `trusonafication_accept_button`
-* A view with the id `trusonafication_reject_button`
-
-2. Using a previously instantiated `Trusona` object, call `startTrusonaficationActivityForPolling`, passing 
-an instance of the implemented `TrusonaficationUICustomizations` to poll for a pending `Trusonafication`. Usually you
-would do this in your `Activity`'s or `Fragment`'s `onResume` method.
-
-3. To stop polling for trusonafications, the started activity will stop   polling at the end of the trusonafication handling process or whenever 
-the `onStop` life cycle method is called.
 
 ### Processing a single trusonafication
 
@@ -774,8 +664,118 @@ During the Trusonafication process, the user will be presented with several step
 - An operating system authentication (e.g. Fingerprint, Pattern, PIN)
 - Scanning of driver's license
 
-The prompt and scanning screens can be customized by setting the `TrusonaficationUICustomizations` property on the `Trusona` class to
-an instance of `TrusonaficationUICustomizations` and having the implemented methods of this interface return the appropriate layout id.
+The prompt and scanning screens can be customized by passing an instance of the `TrusonaficationUICustomizations` interface to the variants of the 
+`startPolling` or `startTrusonaficationActivity` methods that receive one as a parameter. If you don't pass in a `TrusonaficationUICustomizations`
+implementation, then a default dialog and scanner UI will be used.
+
+The `TrusonaficationUICustomizations` interface has five methods:
+   - `boolean usesCustomDialog()`: Set the return value to true if you'd like to provide a custom prompt/dialog.
+   - `Dialog trusonaficationDialog(Context context, Trusonafication trusonafication)`: If you set the return value of `usesCustomDialog()`
+   to true, then you will need to create and return your custom prompt in this method. Otherwise you can return null.
+   - `boolean usesCustomDLScanner()`: Set the return value to true if you'd like to provide a custom scanner UI.
+   - `Fragment getCustomDLScanner(Trusonafication trusonafication)`: If you set the return value of `usesCustomDLScanner()`
+   to true, then this method must return an instance of the fragment you'd like to host the scanner in. Otherwise you can return null.
+   - `Integer getDLScannerContainerId()`: If you set the return value of `usesCustomDLScanner()` to true, then this method must return
+   the `id` of the container in which you want to host the scanner. This `id` has to be defined in the `xml layout` used by the `Fragment`
+   returned by the `getCustomDLScanner(Trusonafication trusonafication)` method. You may return null if you're not using a custom
+   Driver License Scanner.
+
+It's important to note that `Activities` nor `Fragments` should implement the `TrusonaficationUICustomizations` interface, as the SDK will
+maintain a reference to it while it's own `Activity` handles the `Trusonafication` flow.
+
+#### Example
+
+```java
+// 1
+TrusonaficationUICustomizations trusonaficationUICustomizations = new TrusonaficationUICustomizations() {
+  
+    @Override
+    public boolean usesCustomDialog() {
+        // Update the return value to indicate whether you'd like to use a custom prompt dialog or not
+        return true;
+    }
+
+    @Override
+    public Dialog trusonaficationDialog(Context context, Trusonafication trusonafication) {
+        // In order to customize the UI used to prompt users to accept or reject 
+        // trusonafications, you can return a Dialog that inflates the xml layout 
+        // you'd like to use.
+        //
+        // You may customize the views in your Dialog by acquiring a reference to them via the 
+        // dialog.findViewById() method and then applying any changes you see fit, like adding
+        // onCLickListeners, applying spans to TextViews, etc.
+        //
+        // When using a custom Dialog, the layout it inflates must contain the following views so
+        // that the sdk can properly process the accept and reject actions of the user:
+        //
+        // * A View with the id `trusonafication_accept_button`
+        // * A view with the id `trusonafication_reject_button`
+        //
+        // The following code returns a full screen dialog that uses the my_trusonafication_layout
+        // xml file: 
+
+        Dialog dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.my_trusonafication_layout);
+
+        // Note: Do not call the show method of the dialog instance. The SDK will do that
+        // at the appropriate moment. Also, if usesCustomDLScanner() returns false, this 
+        // method may return null.
+        return dialog; 
+    }
+
+    @Override
+    public boolean usesCustomDLScanner() {
+        // Update the return value to indicate whether you'd like to use a custom Driver License Scanner or not
+        return true;
+    }
+
+    @Override
+    Fragment getCustomDLScanner(Trusonafication trusonafication) {
+        // Update this method to return an instance of the Fragment onto which you want to 
+        // load the Driver License Scanner or null if your application does not require
+        // Driver License scanning. The Fragment must be loaded by the FragmentManager
+        // before being returned.
+        //
+        // You may inspect the IN_PROGRESS Trusonafication which is passed  as a parameter and 
+        // perform any UI updates necessary.
+        //
+        // Note: If usesCustomDLScanner() returns false, this method may return null.
+        //
+        // Sample implementation:
+        return MyFragment.newInstance();
+    }
+
+    @IdRes
+    @Override
+    public Integer getDLScannerContainerId() {
+        // Update this method to return the id of the ViewGroup container into which the Trusona 
+        // SDK will display a Driver License Scanner if a Trusonafication requires it. This ID must 
+        // be present in the layout of the Fragment returned by the `getCustomDLScanner` method implementation in
+        // this class. Alternatively, this can be null if your application does not require identity
+        // document scanning.
+        //
+        // Note: If usesCustomDLScanner() returns false, this method may return null.
+        // 
+        // Sample implementation:
+        return R.id.my_fragment_container;
+    }
+};
+
+// 2
+trusona.startPolling(appCompatActivity, trusonaficationUICustomizations);
+```
+
+1. Implement the `TrusonaficationUICustomizations` interface. The layout used by the Dialog created in the 
+`trusonaficationDialog(Context context, Trusonafication trusonafication)` method can be styled in any way but it must contain
+the following views to be properly rendered and to allow the sdk to process accepting and rejecting the trusonafication:
+* A View with the id `trusonafication_accept_button`
+* A view with the id `trusonafication_reject_button`
+
+2. Using a previously instantiated `Trusona` object, call `startPolling` (or `startTrusonaficationActivity`), passing 
+an instance of the implemented `TrusonaficationUICustomizations`. Usually you would do this in your `Activity`'s `onResume` 
+or `onCreate` method.
 
 #### Custom Trusonafication metadata
 When creating a Trusonafication from one of the server SDKs, it is possible to include a set of custom fields on the Trusonafication. 
