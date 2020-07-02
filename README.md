@@ -246,15 +246,16 @@ The following example illustrates how to use the TruCode Scanner by loading it a
 ```java
 // 1
 TruCodeHandler truCodeHandler = new TruCodeHandler() {
+  
   @Override
-  public void onTruCode(boolean success) {
-    if (success) {
-      // The TruCode was successfully scanned. You may want to start monitoring for pending
-      // trusonafications at this point if you haven't done so yet.
-    }
-    else {
-      // There was an error while scanning the TruCode
-    }
+  public void onTrusonaficationCreated() {
+    // The TruCode was successfully scanned. You may want to start monitoring for pending
+    // trusonafications at this point if you haven't done so yet.
+  }
+
+  @Override
+  public void onError(String payload) {
+    // There was an error while processing the TruCode
   }
 
   @NonNull
