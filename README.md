@@ -444,78 +444,44 @@ public class MyActivity extends AppCompatActivity {
 5. If no errors were thrown, handle the trusonafication result by examining its `TrusonaficationStatus`.
 6. If an error was thrown, handle accordingly.
 
-### Processing a single trusonafication
+### Fetching a single in progress trusonafication
 
-Alternatively there is another method to poll for a single trusonafication, you can do so by calling the `pollFromCurrentActivity` sdk method that receives an instance of `AppCompatActivity` and the `Trusonafication` that you want to process as parameters.
+If you'd like to acquire a single in-progress trusonafication, you can do so by calling the 
+`fetchNexTrusonafication(TrusonaficationListener)` method of the `Trusona` class.
+
+Being an asynchronous method, this requires that you pass in an implementation of the `TrusonaficationListener`
+interface, which will provide you with the callbacks to determine the right course of action depending on 
+whether a trusonafication was found or not.
+
+In case a trusonafication is found, you may want to process it via one of the variants of the `startTrusonaficationActivity`
+method.
 
 ```java
 // 1
-
-PollerStopper pollerStopper = trusona.pollFromCurrentActivity(appCompatActivity, trusonaficationUICustomizations);
-
-pollerStopper.stop();
-```
-
-In this case, `pollFromCurrentActivity` returns a `PollerStopper` object, which is used to stop polling on demand by calling the `stop()` method in it.
-
-1. Implement the `TrusonaficationUICustomizations` interface. For more details, see [polling for trusonafications](#polling-for-an-in_progress-trusonafication).
-2. Using a previously instantiated `Trusona` object, call `pollFromCurrentActivity`, passing 
-an instance of `AppCompatActivity` and an instance of the implemented `TrusonaficationUICustomizations` to process the most recent pending 
-`Trusonafication` if any is available.
-
-If you'd like to process a single trusonafication without polling, you can do so by calling the `startTrusonaficationActivity`
-sdk method that receives an instance of `AppCompatActivity` and the `Trusonafication` that you want to process as parameters.
-
-```java
-trusona.startTrusonaficationActivity(appCompatActivity, trusonafication);
-```
-
-There are also alternative methods to provide customization to the trusonafication handling process. 
-
-```java
-trusona.startTrusonaficationActivity(appCompatActivity, trusonafication, trusonaficationUICustomizations);
-```
-
-Internally the `startTrusonaficationActivity` and `startTrusonaficationActivityForPolling` methods call `startActivityForResult`, so the given instance of `AppCompatActivity` needs to implement the `onActivityResult` method to capture the handling trusonafication outcome.
-
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == TrusonaficationActivity.TRUSONAFICATION_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-        /**
-        This Throwable will be returned if something goes wrong while processing a trusonafication. **/
-        Throwable error = (Throwable) data.getSerializableExtra(TrusonaficationActivity.ERROR_KEY);
-
-        // Some of the possible exceptions that can trigger this callback are:
-        if (error instanceof RequiredIdentityDocumentException) {
-        /** Used when a trusonafication required that the user
-            presents their Identity Document but they have not registered one to their account yet
-            or a Driver license scanner has not been properly set up. **/
-        }
-        else if (error instanceof InvalidIdentityDocumentException) {
-        /** Used when the scanned Identity document is not in 
-            AAMVA format or it was not accepted by the trusona servers. **/
-        }
-        else if (error instanceof TrusonaficationNotFoundException) {
-        /** Used when a trusonafication was not found in the Trusona
-            backend. **/
-        }
-        else {
-        //Unexpected type of exception
-        }
-
-        Trusonafication trusonafication;
-        try {
-        trusonafication = TrusonaficationParser.getFromIntent(data);
-        }
-        catch (IllegalArgumentException e) {
-        trusonafication = null;
-        //Trusonafication not present in intent data
-        }
+TrusonaficationListener trusonaficationListener = new TrusonaficationListener() {
+    @Override
+    public void onTrusonafication(Trusonafication trusonafication) {
+        // This callback will execute if an in-progress trusonafication is found.
+        // You may want examine the trusonafication or request that the SDK
+        // processes it by calling:
+        // trusona.startTrusonaficationActivity(appCompatActivity, trusonafication);
     }
-}
-  ```
+
+    @Override
+    public void onErrorFetchingTrusonafication(Throwable throwable) {
+        // This callback will execute if no trusonafication was found or
+        // if an error occured. You can examine the throwable parameter
+        // to determine which was the case.
+    }
+};
+
+// 2
+trusona.fetchNexTrusonafication(trusonaficationListener);
+```
+
+1. Implement the `TrusonaficationListener` interface.
+2. Using a previously instantiated `Trusona` object, call `fetchNexTrusonafication`, passing in
+your implementation of the `TrusonaficationListener` interface.
 
 
 ### Scanning Driver's Licenses
