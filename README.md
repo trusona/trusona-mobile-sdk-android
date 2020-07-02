@@ -740,7 +740,7 @@ the following views to be properly rendered and to allow the sdk to process acce
 * A view with the id `trusonafication_reject_button`
 
 2. Using a previously instantiated `Trusona` object, call `startPolling` (or `startTrusonaficationActivity`), passing 
-an instance of the implemented `TrusonaficationUICustomizations`. Usually you would do this in your `Activity`'s `onResume` 
+an instance of the implemented `TrusonaficationUICustomizations`. Usually, you would do this in your `Activity`'s `onResume` 
 or `onCreate` method.
 
 #### Custom Trusonafication metadata
