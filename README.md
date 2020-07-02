@@ -21,7 +21,7 @@ The Trusona SDK allows simplified interaction with the Trusona API.
 1. [Scanning TruCodes](#scanning-trucodes)
     1. [Customizing the scanner UI](#customizing-the-scanner-ui)
 1. [Polling for an IN_PROGRESS Trusonafication](#polling-for-an-in_progress-trusonafication)
-1. [Processing a single trusonafication](#processing-a-single-trusonafication)
+1. [Fetching a single in progress trusonafication and handling it via startTrusonaficationActivity](#fetching-a-single-in-progress-trusonafication-and-handling-it-via-startTrusonaficationActivity)
 1. [Scanning Driver's Licenses](#scanning-drivers-licenses)
 1. [Scanning Passports](#scanning-passports)
 1. [Upgrading to Executive](#upgrading-to-executive)
@@ -444,7 +444,7 @@ public class MyActivity extends AppCompatActivity {
 5. If no errors were thrown, handle the trusonafication result by examining its `TrusonaficationStatus`.
 6. If an error was thrown, handle accordingly.
 
-### Fetching a single in progress trusonafication
+### Fetching a single in progress trusonafication and handling it via startTrusonaficationActivity
 
 If you'd like to acquire a single in-progress trusonafication, you can do so by calling the 
 `fetchNexTrusonafication(TrusonaficationListener)` method of the `Trusona` class.
