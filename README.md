@@ -637,12 +637,12 @@ implementation, then a default dialog and scanner UI will be used.
 The `TrusonaficationUICustomizations` interface has five methods:
    - `boolean usesCustomDialog()`: Set the return value to true if you'd like to provide a custom prompt/dialog.
    - `Dialog trusonaficationDialog(Context context, Trusonafication trusonafication)`: If you set the return value of `usesCustomDialog()`
-   to true, then you will need to create and return your custom prompt in this method. Otherwise you can return null.
+   to true, then you will need to create and return your custom prompt in this method. Otherwise, you can return null.
    - `boolean usesCustomDLScanner()`: Set the return value to true if you'd like to provide a custom scanner UI.
    - `Fragment getCustomDLScanner(Trusonafication trusonafication)`: If you set the return value of `usesCustomDLScanner()`
-   to true, then this method must return an instance of the fragment you'd like to host the scanner in. Otherwise you can return null.
+   to true, then this method must return an instance of the fragment you'd like to host the scanner in. Otherwise, you can return null.
    - `Integer getDLScannerContainerId()`: If you set the return value of `usesCustomDLScanner()` to true, then this method must return
-   the `id` of the container in which you want to host the scanner. This `id` has to be defined in the `xml layout` used by the `Fragment`
+   the `id` of the container in which you want to host the scanner. This `id` has to be defined in the `XML layout` used by the `Fragment`
    returned by the `getCustomDLScanner(Trusonafication trusonafication)` method. You may return null if you're not using a custom
    Driver License Scanner.
 
@@ -740,7 +740,7 @@ the following views to be properly rendered and to allow the sdk to process acce
 * A view with the id `trusonafication_reject_button`
 
 2. Using a previously instantiated `Trusona` object, call `startPolling` (or `startTrusonaficationActivity`), passing 
-an instance of the implemented `TrusonaficationUICustomizations`. Usually you would do this in your `Activity`'s `onResume` 
+an instance of the implemented `TrusonaficationUICustomizations`. Usually, you would do this in your `Activity`'s `onResume` 
 or `onCreate` method.
 
 #### Custom Trusonafication metadata
