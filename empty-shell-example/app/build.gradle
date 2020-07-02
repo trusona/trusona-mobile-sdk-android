@@ -29,10 +29,9 @@ android {
 dependencies {
   // api fileTree(dir: "libs", include: ["*.jar"])
 
-  api "com.trusona.android:mobile-sdk:10.0.0"
+  api "com.trusona.android:mobile-sdk:10.1.0"
 
-  api "androidx.appcompat:appcompat:1.0.2"
-  api "androidx.constraintlayout:constraintlayout:1.1.3"
+  api "androidx.appcompat:appcompat:1.1.0"
 }
 
 configurations.all {
@@ -53,6 +52,13 @@ configurations.all {
     set << "com.google.guava:guava:27.0.1-jre"
     set << "io.reactivex.rxjava2:rxjava:2.2.4"
     set << "com.google.code.gson:gson:2.8.5"
+
+    set << "androidx.fragment:fragment:1.1.0"
+    set << "androidx.collection:collection:1.1.0"
+    set << "androidx.lifecycle:lifecycle-common:2.2.0"
+    set << "androidx.lifecycle:lifecycle-runtime:2.1.0"
+    set << "androidx.lifecycle:lifecycle-viewmodel:2.1.0"
+    set << "androidx.arch.core:core-common:2.1.0"
 
     force set.toArray()
     forcedModules = set
