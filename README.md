@@ -92,7 +92,7 @@ The Trusona SDK should be declared as a dependency in your Gradle project.
 ```gradle
 dependencies {
   // other dependencies
-  api "com.trusona.android:mobile-sdk:10.1.0"
+  api "com.trusona.android:mobile-sdk:11.0.0"
 
   // the following is only required if you will be using the Trusona Passport SDK
   //api "com.trusona.android:passport-sdk:8.0.0"
@@ -246,15 +246,16 @@ The following example illustrates how to use the TruCode Scanner by loading it a
 ```java
 // 1
 TruCodeHandler truCodeHandler = new TruCodeHandler() {
+  
   @Override
-  public void onTruCode(boolean success) {
-    if (success) {
-      // The TruCode was successfully scanned. You may want to start monitoring for pending
-      // trusonafications at this point if you haven't done so yet.
-    }
-    else {
-      // There was an error while scanning the TruCode
-    }
+  public void onTrusonaficationCreated() {
+    // The TruCode was successfully scanned. You may want to start monitoring for pending
+    // trusonafications at this point if you haven't done so yet.
+  }
+
+  @Override
+  public void onError(String payload) {
+    // There was an error while processing the TruCode
   }
 
   @NonNull
