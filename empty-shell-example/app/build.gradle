@@ -42,12 +42,9 @@ configurations.all {
     //
     // update as necessary
     //
-    set << "androidx.vectordrawable:vectordrawable:1.0.1"
-    set << "androidx.annotation:annotation:1.0.1"
-    set << "androidx.core:core:1.0.1"
+    set << "androidx.annotation:annotation:1.1.0"
+    set << "androidx.core:core:1.3.0"
 
-    set << "org.apache.httpcomponents:httpcore:4.4.5"
-    set << "com.google.code.findbugs:jsr305:3.0.2"
     set << "com.squareup.okhttp3:okhttp:3.12.1"
     set << "com.google.guava:guava:27.0.1-jre"
     set << "io.reactivex.rxjava2:rxjava:2.2.4"
@@ -59,6 +56,7 @@ configurations.all {
     set << "androidx.lifecycle:lifecycle-runtime:2.1.0"
     set << "androidx.lifecycle:lifecycle-viewmodel:2.1.0"
     set << "androidx.arch.core:core-common:2.1.0"
+    set << "androidx.versionedparcelable:versionedparcelable:1.1.0"
 
     force set.toArray()
     forcedModules = set
