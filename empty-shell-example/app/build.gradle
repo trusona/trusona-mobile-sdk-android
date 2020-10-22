@@ -59,6 +59,9 @@ configurations.all {
     set << "androidx.arch.core:core-common:2.1.0"
     set << "androidx.versionedparcelable:versionedparcelable:1.1.0"
 
+    set << "org.apache.httpcomponents:httpcore:4.4.5"
+    set << "com.google.code.findbugs:jsr305:3.0.2"
+
     force set.toArray()
     forcedModules = set
   }
