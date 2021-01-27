@@ -129,13 +129,11 @@ To create an instance of `Trusona` for making API calls, use the provided constr
 Trusona trusona = new Trusona();
 ```
 
-The Trusona SDKs have infrastructure in place to serve the US, European and Asia-Pacific regions, with the US being the default one. Unless otherwise noted, you will not need to configure Trusona to use a specific region. If you have been provisioned in a specific region, you will need to point the SDK to use that region. To achieve this, you’ll need to specify one of the possible values from the `Region` enum when building a `Trusona` instance.
+The Trusona SDKs have infrastructure in place to serve the US and European regions, with the US being the default one. Unless otherwise noted, you will not need to configure Trusona to use a specific region. If you have been provisioned in the European region, you will need to point the SDK to use that region. To achieve this, you’ll need to specify the `EU` value from the `Region` enum when building a `Trusona` instance.
 
 ```java
 // Use this to connect to the European region
 Trusona trusona = new Trusona(Region.EU);     
-//or use this to connect to the Asia-Pacific region
-Trusona trusona = new Trusona(Region.AP);
 ```
 
 If you have deployed your own infrastructure, you can customize the SDK to use it by providing the base url that points to it, as shown below:
