@@ -29,7 +29,7 @@ android {
 dependencies {
   // api fileTree(dir: "libs", include: ["*.jar"])
 
-  api "com.trusona.android:mobile-sdk:11.2.0"
+  api "com.trusona.android:mobile-sdk:11.3.0"
 
   api "androidx.appcompat:appcompat:1.2.0"
 }
