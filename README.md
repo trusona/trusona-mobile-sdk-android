@@ -95,7 +95,7 @@ dependencies {
   api "com.trusona.android:mobile-sdk:11.3.1"
 
   // the following is only required if you will be using the Trusona Passport SDK
-  //api "com.trusona.android:passport-sdk:8.0.2"
+  //api "com.trusona.android:passport-sdk:8.0.3"
 }
 ```
 
